@@ -6,6 +6,11 @@ public class ApplicationConstants {
 
     public static final String UNS = "UNS";
 
+    public static final String UNRWA = "UNRWA";
+
+    public static final String ICAO = "ICAO";
+
+    public static final String ICAO_DESCR = "International Civil Aviation Organization";
     public static final String UNS_POSTING_LINK_URL_PREFIX = "https://careers.un.org/lbw/";
 
     public static final String UNS_FIELD_DUTY_STATION_KEY = "Duty Station";

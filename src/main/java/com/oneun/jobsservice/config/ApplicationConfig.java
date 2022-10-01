@@ -12,14 +12,15 @@ import org.springframework.context.annotation.Configuration;
 public class ApplicationConfig {
     Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
     @Autowired
-    JsoupUNSService jsoupUNSService;
+    private JsoupUNSService jsoupUNSService;
 @Bean
     CommandLineRunner init(){
         return args -> {
-            logger.info("Config class during start up!");
-            System.out.println( "Config class during start up!");
+            logger.info("Config class has been initialized during start up!");
 
             jsoupUNSService.parseUNCareers();
+            logger.info("UNS Parsing completed during application start up! ");
+
         };
     }
 }

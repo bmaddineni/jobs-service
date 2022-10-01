@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JobOpeningService {
     @Autowired
-    JobOpeningRepository jobOpeningRepository;
+    private JobOpeningRepository jobOpeningRepository;
 
 
     public Iterable findAll() {

@@ -13,14 +13,9 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/jobs")
 public class JobOpeningController {
-    @Autowired
-    JobOpeningRepository jobOpeningRepository;
 
     @Autowired
-    JsoupUNSService jsoupUNSService;
-
-    @Autowired
-    JobOpeningService jobOpeningService;
+    private JobOpeningService jobOpeningService;
 
     @GetMapping
     public Iterable findAll(){
@@ -47,13 +42,5 @@ public class JobOpeningController {
     public JobOpening create(@RequestBody JobOpening jobOpening) {
         return jobOpeningService.save(jobOpening);
     }
-    @GetMapping("/startLoad")
-    public void jSoupParseUNS(JobOpening jobOpening) {
 
-        try {
-            jsoupUNSService.parseUNCareers();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

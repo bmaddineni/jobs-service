@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Data
 @Entity(name="JOB_OPENING_TBL")
@@ -31,4 +32,5 @@ public class JobOpening {
     private String postedDate;
     private String deadlineDate;
     private String postingUrl;
+    private Date addedDate;
 }
