@@ -1,7 +1,6 @@
 package com.oneun.jobsservice.config;
 
 import com.oneun.jobsservice.service.JsoupUNSService;
-import org.hibernate.internal.build.AllowSysOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
