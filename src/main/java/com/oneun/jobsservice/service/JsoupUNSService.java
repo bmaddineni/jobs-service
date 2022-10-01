@@ -43,10 +43,17 @@ public class JsoupUNSService {
 
             if(i % 2 ==1){
                 if(ele.stream().count() !=1){
-                    String jo = Arrays.stream(ele.get(i).getElementsByTag("td").get(0).getElementsByTag("a").attr("href").split("=")).toArray()[1].toString();
+                    String jo = ApplicationConstants.UNS+"-"+Arrays.stream(ele.get(i)
+                                    .getElementsByTag("td").get(0)
+                            .getElementsByTag("a")
+                            .attr("href")
+                            .split("="))
+                            .toArray()[1].toString();
                     String joHeaderDetails = ele.get(i+1).getElementsByTag("td").html();
-                    String joTitle = ele.get(i).getElementsByTag("td").get(0).getElementsByTag("a").text();
-                    String postingUrl = ele.get(i).getElementsByTag("td").get(0).getElementsByTag("a").attr("href");
+                    String joTitle = ele.get(i).getElementsByTag("td").get(0)
+                            .getElementsByTag("a").text();
+                    String postingUrl = ele.get(i).getElementsByTag("td").get(0)
+                            .getElementsByTag("a").attr("href");
 
                     HashMap<String,String> newHashMap = getJobHeaderDetailsByString(joHeaderDetails.trim());
                     newHashMap.put(ApplicationConstants.UNS_FIELD_JOB_TITLE_KEY,joTitle);

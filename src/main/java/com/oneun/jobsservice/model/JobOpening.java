@@ -32,5 +32,6 @@ public class JobOpening {
     private String postedDate;
     private String deadlineDate;
     private String postingUrl;
+
     private Date addedDate;
 }
