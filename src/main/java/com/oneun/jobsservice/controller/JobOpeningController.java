@@ -3,15 +3,21 @@ package com.oneun.jobsservice.controller;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import com.oneun.jobsservice.service.JobOpeningService;
+import com.oneun.jobsservice.service.JsoupUNSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/jobs")
 public class JobOpeningController {
     @Autowired
     JobOpeningRepository jobOpeningRepository;
+
+    @Autowired
+    JsoupUNSService jsoupUNSService;
 
     @Autowired
     JobOpeningService jobOpeningService;
@@ -40,5 +46,14 @@ public class JobOpeningController {
     @ResponseStatus(HttpStatus.CREATED)
     public JobOpening create(@RequestBody JobOpening jobOpening) {
         return jobOpeningService.save(jobOpening);
+    }
+    @GetMapping("/startLoad")
+    public JobOpening jSoupParseUNS(JobOpening jobOpening) {
+
+        try {
+           return jsoupUNSService.parseUNCareers();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
