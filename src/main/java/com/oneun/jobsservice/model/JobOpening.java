@@ -1,6 +1,7 @@
 package com.oneun.jobsservice.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import javax.persistence.Id;
 @Entity(name="JOB_OPENING_TBL")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class JobOpening {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -21,5 +23,12 @@ public class JobOpening {
     private String unEntity;
     private String jobOpeningId;
     private String jobTitle;
-    private String moreInfo;
+    private String dutyStation;
+    private String jobFamily;
+    private String jobNetwork;
+    private String departmentOffice;
+    private String level;
+    private String postedDate;
+    private String deadlineDate;
+    private String postingUrl;
 }

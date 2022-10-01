@@ -48,10 +48,10 @@ public class JobOpeningController {
         return jobOpeningService.save(jobOpening);
     }
     @GetMapping("/startLoad")
-    public JobOpening jSoupParseUNS(JobOpening jobOpening) {
+    public void jSoupParseUNS(JobOpening jobOpening) {
 
         try {
-           return jsoupUNSService.parseUNCareers();
+            jsoupUNSService.parseUNCareers();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
