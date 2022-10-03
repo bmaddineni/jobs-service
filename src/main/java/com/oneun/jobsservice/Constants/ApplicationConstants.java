@@ -34,6 +34,9 @@ public class ApplicationConstants {
     public static final String UNS_FIELD_DEPT_OFFICE_KEY = "Department/Office";
 
 
-
-
+    public static final String WFP = "WFP";
+    public static final String WFP_Careers_URL = "https://www.wfp.org/careers/job-openings";
+    public static final String UNICEF_Careers_URL = "https://jobs.unicef.org/en-us/listing/?page=1&page-items=1000";
+    public static final String UNICEF = "UNICEF";
+    public static final String UNICEF_POSTING_LINK_URL_PREFIX = "https://jobs.unicef.org";
 }

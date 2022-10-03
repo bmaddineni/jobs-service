@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Data
@@ -23,6 +20,7 @@ public class JobOpening {
 
     private String unEntity;
     private String jobOpeningId;
+    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
     private String jobTitle;
     private String dutyStation;
     private String jobFamily;
@@ -31,7 +29,13 @@ public class JobOpening {
     private String level;
     private String postedDate;
     private String deadlineDate;
+//    CHARACTER LARGE OBJECT
+@Column(columnDefinition = "CHARACTER LARGE OBJECT")
     private String postingUrl;
+    private String wfpTypeOfContract;
+
+    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+private String unicefJobDescrBasic;
 
     private Date addedDate;
 }

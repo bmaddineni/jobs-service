@@ -107,8 +107,6 @@ public class JsoupUNDPService {
             }
 
 
-        System.out.println( getAdditionalAttributesFromPostingPage("https://worldbankgroup.csod.com/ats/careersite/search.aspx?site=1&c=worldbankgroup&sid=%5e%5e%5eFLGscZMYY2RrwVaMR%2ftHYw%3d%3d"));
-//log
         logger.info("UNDP Jobs has been loaded!");
 
     }
@@ -117,8 +115,7 @@ public class JsoupUNDPService {
         Document undpPostingPageDoc = SSLHelper.getConnection(url).get();
 
         HashMap<String,String> jobDetailsMap = new HashMap<>();
-       System.out.println(undpPostingPageDoc.getElementsByClass("results-table"));
-        Elements elements = undpPostingPageDoc.getElementsByClass("results-table");
+        Elements elements = undpPostingPageDoc.getElementsByClass("careers--item");
        System.out.println(elements);
 //        for (int i = 0; i < elements.size(); i++) {
 //
