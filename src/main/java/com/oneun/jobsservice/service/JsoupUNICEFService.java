@@ -32,10 +32,10 @@ public class JsoupUNICEFService {
 //            * "0 0/30 8-10 * * *" = 8:00, 8:30, 9:00, 9:30 and 10 o'clock every day.
 //            * "0 0 9-17 * * MON-FRI" = on the hour nine-to-five weekdays
 //            * "0 0 0 25 12 ?" = every Christmas Day at midnight
-    @Scheduled(cron = "0 0/1 * * * *")
+    @Scheduled(cron = "0 0/10 * * * *")
     public void parseUNICEFCareers() throws IOException,StringIndexOutOfBoundsException {
 
-
+int counter = 0;
         Document unicefDoc = SSLHelper.getConnection(ApplicationConstants.UNICEF_Careers_URL).get();
         HashMap<String,HashMap<String,String>> hashMap = new HashMap<>();
 
@@ -50,14 +50,15 @@ public class JsoupUNICEFService {
 
             Element tableElements = ele.get(i);
 
-            String unicefJobPostingURL= ApplicationConstants.UNICEF_POSTING_LINK_URL_PREFIX +tableElements.getElementsByAttribute("href").get(0).attr("href");
+            String unicefJobPostingURLFull= tableElements.getElementsByAttribute("href").get(0).attr("href");
 
 //            String unicefJobPostingURL= (unicefJobPostingURLString.length()>254) ? unicefJobPostingURLString.substring(0,254) : unicefJobPostingURLString;
-                    String unicefJobId = Arrays.stream(Arrays.stream(unicefJobPostingURL
+                    String unicefJobId = Arrays.stream(Arrays.stream(unicefJobPostingURLFull
                     .split("/job/"))
                         .toArray()[1].toString()
                     .split("/"))
                         .toArray()[0].toString();
+            String unicefJobPostingURL=ApplicationConstants.UNICEF_POSTING_LINK_URL_PREFIX+unicefJobId;
             String unicefPostingTitle = tableElements.getElementsByAttribute("href").get(0).text();
 
 //            System.out.println(unicefJobId + " --->  " + unicefPostingTitle.length());
@@ -68,20 +69,24 @@ public class JsoupUNICEFService {
             String unicefBasicJobDescription = tableElements.getElementsByTag("p").get(1).text();
 
 //            System.out.println(unicefBasicJobDescription);
-            JobOpening jobOpening = JobOpening.builder()
-                    .jobOpeningId(unicefJobId)
-                    .postingUrl(unicefJobPostingURL)
-                    .dutyStation(unicefDutyStation)
-                    .deadlineDate(unicefDeadlineDate)
-                    .jobTitle(unicefPostingTitle)
-                    .addedDate(new Date())
-                    .unEntity(ApplicationConstants.UNICEF)
-                    .unicefJobDescrBasic(unicefBasicJobDescription)
-                    .build();
+
 
 
 //
             if(jobOpeningRepository.findByJobOpeningId(unicefJobId).isEmpty()){
+                JobOpening jobOpening = JobOpening.builder()
+                        .jobOpeningId(unicefJobId)
+                        .postingUrl(unicefJobPostingURL)
+                        .dutyStation(unicefDutyStation)
+                        .deadlineDate(unicefDeadlineDate)
+                        .jobTitle(unicefPostingTitle)
+                        .addedDate(new Date())
+                        .unEntity(ApplicationConstants.UNICEF)
+                        .unicefJobDescrBasic(unicefBasicJobDescription)
+                        .postingDescrRaw(getAdditionalAttributesFromPostingPage(unicefJobPostingURL))
+                        .build();
+                counter++;
+
                 jobOpeningRepository.save(jobOpening);
 
             }
@@ -94,32 +99,15 @@ public class JsoupUNICEFService {
 
 
 //        System.out.println( getAdditionalAttributesFromPostingPage("https://jobs.unicef.org/en-us/listing/?page=1&page-items=1000"));
-        logger.info("WFP Jobs has been loaded!");
+        logger.info(counter +" UNICEF Jobs has been loaded!");
 
     }
 
-   private HashMap<String , String > getAdditionalAttributesFromPostingPage(String url) throws IOException {
-        Document wfpPostingPageDoc = SSLHelper.getConnection(url).get();
+   private String getAdditionalAttributesFromPostingPage(String url) throws IOException {
+        Document postingPageDoc = SSLHelper.getConnection(url).timeout(10000).get();
 
-        HashMap<String, String> jobDetailsMap = new HashMap<>();
-        Elements elements = wfpPostingPageDoc.select("div #search-results-content");
-        for (int i = 0; i < elements.size(); i++) {
-//
-            Element element = elements.get(i);
+        return postingPageDoc.select("#job-content").text();
 
-            System.out.println(element.getElementsByTag("a").size());
-
-//            System.out.println(element.select("div.row--teaser"));
-
-//
-//            Element keyElement = element.getElementsByClass("job-info-label").get(0);
-//            Element valueElement = element.getElementsByClass("job-info-value").get(0);
-//
-//            jobDetailsMap.put(keyElement.text(),valueElement.text());
-//
-        }
-
-        return jobDetailsMap;
     }
 
 

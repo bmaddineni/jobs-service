@@ -37,5 +37,8 @@ public class JobOpening {
     @Column(columnDefinition = "CHARACTER LARGE OBJECT")
 private String unicefJobDescrBasic;
 
+    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+    private String postingDescrRaw;
+
     private Date addedDate;
 }

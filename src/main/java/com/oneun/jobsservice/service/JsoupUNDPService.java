@@ -42,7 +42,7 @@ public class JsoupUNDPService {
         //fetches all table rows
         Elements ele=unsDoc.getElementsByClass("table-sortable");
         logger.info("UNDP Jobs loading started!");
-
+int counter = 0;
 
         for (int i = 0; i < ele.stream().count(); i++) {
 
@@ -93,7 +93,7 @@ public class JsoupUNDPService {
                             .addedDate(new Date())
                             .build();
                     if (jobOpeningRepository.findByJobOpeningId(undpJobId).isEmpty()) {
-
+counter++;
                         jobOpeningRepository.save(jobOpening);
 
 
@@ -107,7 +107,7 @@ public class JsoupUNDPService {
             }
 
 
-        logger.info("UNDP Jobs has been loaded!");
+        logger.info(counter + " UNDP Jobs has been loaded!");
 
     }
 

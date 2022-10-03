@@ -36,6 +36,7 @@ public class JsoupWFPService {
     public void parseWFPCareers() throws IOException {
 
 
+        int counter = 0;
         Document wfpDoc = SSLHelper.getConnection(ApplicationConstants.WFP_Careers_URL).get();
         HashMap<String,HashMap<String,String>> hashMap = new HashMap<>();
 
@@ -79,6 +80,7 @@ public class JsoupWFPService {
                             .build();
 
             if(jobOpeningRepository.findByJobOpeningId(wfpJoId).isEmpty()){
+                counter++;
                 jobOpeningRepository.save(jobOpening);
 
             }
@@ -91,7 +93,7 @@ public class JsoupWFPService {
 
 
 //        System.out.println( getAdditionalAttributesFromPostingPage("https://jobs.unicef.org/en-us/listing/?page=1&page-items=1000"));
-        logger.info("WFP Jobs has been loaded!");
+        logger.info(counter + " WFP Jobs has been loaded!");
 
     }
 
