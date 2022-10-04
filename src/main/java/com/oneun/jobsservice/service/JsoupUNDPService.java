@@ -32,7 +32,7 @@ public class JsoupUNDPService {
 //            * "0 0/30 8-10 * * *" = 8:00, 8:30, 9:00, 9:30 and 10 o'clock every day.
 //            * "0 0 9-17 * * MON-FRI" = on the hour nine-to-five weekdays
 //            * "0 0 0 25 12 ?" = every Christmas Day at midnight
-    @Scheduled(cron = "0 0/1 * * * *")
+//    @Scheduled(cron = "0 0/1 * * * *")
     public void parseUNDPCareers() throws IOException {
 
 
@@ -62,12 +62,25 @@ int counter = 0;
 
                     Elements rowCells = rowElement.getElementsByTag("td");
                     String postingTitle = rowCells.get(0).text();
-                    String undpJobId = postingTitle.contains("**") ?
+
+                    String postingURLShort = rowCells.get(0).getElementsByTag("a").get(0).attr("href");
+
+
+                    String undpJobId = postingURLShort.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER) ?
                             ApplicationConstants.UNDP+"-"+Arrays.stream(rowCells.get(0)
                                             .getElementsByTag("a")
                                             .get(0).attr("href")
                                             .split("/job/"))
                                     .toArray()[1].toString()
+
+                            : postingURLShort.contains(ApplicationConstants.UNDP_PARTNER_AGENCIES_URL_IDENTIFIER) ?
+
+                            ApplicationConstants.UNDP+"-"+ Arrays.stream(Arrays.stream(rowCells.get(0)
+                                            .getElementsByTag("a")
+                                            .get(0).attr("href")
+                                            .split("="))
+                                    .toArray()[1].toString().split("&"))
+                                    .toArray()[0].toString()
 
                             : ApplicationConstants.UNDP+"-"+Arrays.stream(rowCells.get(0)
                                     .getElementsByTag("a")
@@ -75,12 +88,22 @@ int counter = 0;
                                     .split("="))
                             .toArray()[1].toString();
 
-                    String postingURLShort = rowCells.get(0).getElementsByTag("a").get(0).attr("href");
-                    String postingURL = postingURLShort.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER)? postingURLShort : ApplicationConstants.UNDP_POSTING_LINK_URL_PREFIX +postingURLShort;
+                    String postingURL = postingURLShort.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER)?
+                            postingURLShort
+                            : postingURLShort.contains(ApplicationConstants.UNDP_PARTNER_AGENCIES_URL_IDENTIFIER) ?
+                            ApplicationConstants.UNDP_Peoplesoft_URL_PREFIX+Arrays.stream(postingURLShort.split("JobOpeningId")).toArray()[1].toString()
+                                    .replace("HRS_JO_PST_SEQ","PostingSeq")
+                                    .replace("hrs_site_id","SiteId")
+                            : ApplicationConstants.UNDP_POSTING_LINK_URL_PREFIX +postingURLShort;
                     String undpJobType = rowCells.get(1).text();
                     String undpjobLevel = rowCells.get(2).text();
                     String undpDeadline = rowCells.get(3).text();
                     String undpDutyStation = rowCells.get(4).text();
+
+//                    "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?JobOpeningId=42178&HRS_JO_PST_SEQ=1&hrs_site_id=2"
+//                    "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId=42178&SiteId=2&PostingSeq=1
+//                    "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId=42178&PostingSeq=1&SiteId=2"
+                    if (jobOpeningRepository.findByJobOpeningId(undpJobId).isEmpty()) {
 
                     JobOpening jobOpening = JobOpening.builder()
                             .jobOpeningId(undpJobId)
@@ -90,9 +113,9 @@ int counter = 0;
                             .deadlineDate(undpDeadline)
                             .dutyStation(undpDutyStation)
                             .jobTitle(postingTitle.trim())
+                            .postingDescrRaw(getAdditionalAttributesFromPostingPage(postingURL))
                             .addedDate(new Date())
                             .build();
-                    if (jobOpeningRepository.findByJobOpeningId(undpJobId).isEmpty()) {
 counter++;
                         jobOpeningRepository.save(jobOpening);
 
@@ -104,31 +127,34 @@ counter++;
 
             }
 
+
             }
 
-
+        String url1= "https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/job/5961";
+String peoplesoftUrl = "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId=42178&SiteId=2&PostingSeq=1";
+//        getAdditionalAttributesFromPostingPage(peoplesoftUrl);
         logger.info(counter + " UNDP Jobs has been loaded!");
 
     }
 
-   private HashMap<String , String > getAdditionalAttributesFromPostingPage(String url) throws IOException {
-        Document undpPostingPageDoc = SSLHelper.getConnection(url).get();
+    private String getAdditionalAttributesFromPostingPage(String url) throws IOException {
+        Document postingPageDoc = SSLHelper.getConnection(url).get();
 
-        HashMap<String,String> jobDetailsMap = new HashMap<>();
-        Elements elements = undpPostingPageDoc.getElementsByClass("careers--item");
-       System.out.println(elements);
-//        for (int i = 0; i < elements.size(); i++) {
-//
-//            Element element = elements.get(i);
-//
-//            Element keyElement = element.getElementsByClass("job-info-label").get(0);
-//            Element valueElement = element.getElementsByClass("job-info-value").get(0);
-//
-//            jobDetailsMap.put(keyElement.text(),valueElement.text());
-//
-//        }
+        if (url.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER)) {
 
-        return jobDetailsMap;
+//            System.out.println(postingPageDoc.getAllElements());
+            return postingPageDoc.select("#job").text();
+        }
+
+        else if (url.contains(ApplicationConstants.UNDP_PARTNER_AGENCIES_URL_IDENTIFIER)){
+
+//            System.out.println(postingPageDoc.select("#win0divPSPAGECONTAINER").text());
+            return postingPageDoc.select("#win0divPSPAGECONTAINER").text();
+
+        }
+        else {
+            return postingPageDoc.select("#content-main").text();
+        }
     }
 
 

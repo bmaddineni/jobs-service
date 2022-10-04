@@ -11,4 +11,5 @@ public interface JobOpeningRepository extends JpaRepository< JobOpening,Integer>
 
 
      List<JobOpening> findByUnEntity(String unEntity);
+
 }

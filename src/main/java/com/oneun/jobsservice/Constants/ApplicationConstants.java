@@ -18,7 +18,7 @@ public class ApplicationConstants {
 
     public static final String UNDP_ORACLE_HCM_IDENTIFIER = "oraclecloud";
 
-//    cj_view_job.cfm?cur_job_id=109215
+    //    cj_view_job.cfm?cur_job_id=109215
     public static final String UNS_FIELD_DUTY_STATION_KEY = "Duty Station";
 
     public static final String UNS_FIELD_POSTING_URL_KEY = "Posting URL";
@@ -39,4 +39,7 @@ public class ApplicationConstants {
     public static final String UNICEF_Careers_URL = "https://jobs.unicef.org/en-us/listing/?page=1&page-items=1000";
     public static final String UNICEF = "UNICEF";
     public static final String UNICEF_POSTING_LINK_URL_PREFIX = "https://jobs.unicef.org/en-us/job/";
+    public static final String UNDP_PARTNER_AGENCIES_URL_IDENTIFIER = "partner";
+
+    public static final String UNDP_Peoplesoft_URL_PREFIX = "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId";
 }

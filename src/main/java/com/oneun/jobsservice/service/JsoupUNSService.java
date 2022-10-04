@@ -31,7 +31,7 @@ public class JsoupUNSService {
 //            * "0 0/30 8-10 * * *" = 8:00, 8:30, 9:00, 9:30 and 10 o'clock every day.
 //            * "0 0 9-17 * * MON-FRI" = on the hour nine-to-five weekdays
 //            * "0 0 0 25 12 ?" = every Christmas Day at midnight
-    @Scheduled(cron = "0 0/30 * * * *")
+//    @Scheduled(cron = "0 0/30 * * * *")
     public void parseUNCareers() throws IOException {
 
 

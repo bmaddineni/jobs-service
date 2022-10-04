@@ -37,6 +37,7 @@ public class JobOpeningController {
 
     }
 
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public JobOpening create(@RequestBody JobOpening jobOpening) {

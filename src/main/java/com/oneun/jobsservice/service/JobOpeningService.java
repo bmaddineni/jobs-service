@@ -5,6 +5,8 @@ import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class JobOpeningService {
     @Autowired
@@ -31,4 +33,6 @@ public class JobOpeningService {
 
       return   jobOpeningRepository.save(jobOpening);
     }
+
+
 }
