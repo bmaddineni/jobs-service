@@ -3,6 +3,8 @@ package com.oneun.jobsservice.service;
 import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
+import com.oneun.jobsservice.model.JobOpeningLoadStatus;
+import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -23,6 +25,8 @@ public class JsoupUNSService {
     Logger logger = LoggerFactory.getLogger(JsoupUNSService.class);
     @Autowired
     private JobOpeningRepository jobOpeningRepository;
+    @Autowired
+    private JobOpeningLoadStatusRepository loadStatusRepository;
 
 //            * "0 0 * * * *" = the top of every hour of every day.
 //            * "*/10 * * * * *" = every ten seconds.
@@ -34,6 +38,8 @@ public class JsoupUNSService {
 //    @Scheduled(cron = "0 0/30 * * * *")
     public void parseUNCareers() throws IOException {
 
+
+        Date startDate = new Date();
 
         int counter = 0;
         Document unsDoc = SSLHelper.getConnection(ApplicationConstants.UNS_Careers_URL).get();
@@ -104,6 +110,14 @@ public class JsoupUNSService {
         }
         logger.info(counter +" UNS Jobs has been loaded!");
 
+        JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
+                .entity(ApplicationConstants.UNS)
+                .endDateTimestamp(new Date())
+                .startDateTimestamp(startDate)
+                .count(counter)
+                .build();
+
+        loadStatusRepository.save(loadStatus);
 
     }
 

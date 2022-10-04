@@ -3,6 +3,8 @@ package com.oneun.jobsservice.service;
 import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
+import com.oneun.jobsservice.model.JobOpeningLoadStatus;
+import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,6 +27,9 @@ public class JsoupWFPService {
     @Autowired
     private JobOpeningRepository jobOpeningRepository;
 
+    @Autowired
+    private JobOpeningLoadStatusRepository loadStatusRepository;
+
 //            * "0 0 * * * *" = the top of every hour of every day.
 //            * "*/10 * * * * *" = every ten seconds.
 //            * "0 0 8-10 * * *" = 8, 9 and 10 o'clock of every day.
@@ -34,6 +39,7 @@ public class JsoupWFPService {
 //            * "0 0 0 25 12 ?" = every Christmas Day at midnight
 //    @Scheduled(cron = "0 0/1 * * * *")
     public void parseWFPCareers() throws IOException {
+        Date startDate = new Date();
 
 
         int counter = 0;
@@ -95,6 +101,15 @@ public class JsoupWFPService {
 
 
 //        System.out.println( getAdditionalAttributesFromPostingPage("https://jobs.unicef.org/en-us/listing/?page=1&page-items=1000"));
+
+        JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
+                .entity(ApplicationConstants.UNS)
+                .endDateTimestamp(new Date())
+                .startDateTimestamp(startDate)
+                .count(counter)
+                .build();
+
+        loadStatusRepository.save(loadStatus);
         logger.info(counter + " WFP Jobs has been loaded!");
 
     }

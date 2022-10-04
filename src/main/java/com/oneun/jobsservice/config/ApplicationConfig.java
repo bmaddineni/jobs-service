@@ -29,19 +29,19 @@ public class ApplicationConfig {
         return args -> {
             logger.info("Config class has been initialized during start up!");
 
-//            jsoupUNSService.parseUNCareers();
-//            logger.info("UNS Parsing completed during application start up! ");
+            jsoupUNSService.parseUNCareers();
+            logger.info("UNS Parsing completed during application start up! ");
 
             jsoupUNDPService.parseUNDPCareers();
             logger.info("UNDP Parsing completed during application start up! ");
 
 //
-//            jsoupWFPService.parseWFPCareers();
-//            logger.info("WFP Parsing completed during application start up! ");
+            jsoupWFPService.parseWFPCareers();
+            logger.info("WFP Parsing completed during application start up! ");
 //
 //
-//            jsoupUNICEFService.parseUNICEFCareers();
-//            logger.info("UNICEF Parsing completed during application start up! ");
+            jsoupUNICEFService.parseUNICEFCareers();
+            logger.info("UNICEF Parsing completed during application start up! ");
 
         };
     }

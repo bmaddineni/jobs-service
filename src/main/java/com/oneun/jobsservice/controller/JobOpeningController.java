@@ -1,7 +1,9 @@
 package com.oneun.jobsservice.controller;
 
 import com.oneun.jobsservice.model.JobOpening;
+import com.oneun.jobsservice.model.JobOpeningLoadStatus;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
+import com.oneun.jobsservice.service.JobOpeningLoadStatusService;
 import com.oneun.jobsservice.service.JobOpeningService;
 import com.oneun.jobsservice.service.JsoupUNSService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +19,33 @@ public class JobOpeningController {
     @Autowired
     private JobOpeningService jobOpeningService;
 
+    @Autowired
+    private JobOpeningLoadStatusService loadStatus;
+
     @GetMapping
-    public Iterable findAll(){
+    public Iterable findAll() {
 
         return jobOpeningService.findAll();
     }
 
     @GetMapping("/job/{joId}")
-    public Iterable findByJobOpeningId(@PathVariable String joId){
+    public Iterable findByJobOpeningId(@PathVariable String joId) {
 
         return jobOpeningService.findByJobOpeningId(joId);
 
     }
 
     @GetMapping("/entity/{unEntity}")
-    public Iterable findByEntity(@PathVariable String unEntity){
+    public Iterable findByEntity(@PathVariable String unEntity) {
 
         return jobOpeningService.findByUnEntity(unEntity);
+
+    }
+
+    @GetMapping("/status")
+    public Iterable getStatus() {
+
+        return loadStatus.findAll();
 
     }
 
