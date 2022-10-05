@@ -17,19 +17,21 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-
-import static java.lang.Integer.valueOf;
 
 @Service
 public class JsoupUNESCOService {
 
     Logger logger = LoggerFactory.getLogger(JsoupUNESCOService.class);
     @Autowired
-    private JobOpeningRepository jobOpeningRepository;
+    private final JobOpeningRepository jobOpeningRepository;
 
     @Autowired
-    private JobOpeningLoadStatusRepository loadStatusRepository;
+    private final JobOpeningLoadStatusRepository loadStatusRepository;
+
+    public JsoupUNESCOService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository) {
+        this.jobOpeningRepository = jobOpeningRepository;
+        this.loadStatusRepository = loadStatusRepository;
+    }
 
     //            * "0 0 * * * *" = the top of every hour of every day.
 //            * "*/10 * * * * *" = every ten seconds.
@@ -48,7 +50,7 @@ public class JsoupUNESCOService {
 
         String noOfEntries = Arrays.stream(unescoDoc.getElementsByClass("paginationLabel").get(0).text().split("of")).toArray()[1].toString();
 
-//        System.out.println(valueOf(noOfEntries.trim())/25);
+        int noOfLoops = Integer.parseInt(noOfEntries.trim())/25;
 
         String unescoUrlFirstPart = Arrays.stream(ApplicationConstants.UNESCO_Careers_URL.split("782502")).toArray()[0].toString() + "782502/";
 
@@ -58,7 +60,7 @@ public class JsoupUNESCOService {
         logger.info("UNESCO Jobs loading started!");
 
 
-        for (int j = 0; j <= 2; j++) {
+        for (int j = 0; j <= noOfLoops; j++) {
 
             Document unescoDocPage = SSLHelper.getConnection(unescoUrlFirstPart + loop + unescoUrlSecondPart).get();
 
@@ -71,7 +73,7 @@ public class JsoupUNESCOService {
             Elements ele = unescoDocPage.getElementsByClass("data-row");
 
 
-            for (int i = 0; i < ele.stream().count(); i++) {
+            for (int i = 0; i < (long) ele.size(); i++) {
 
                 Element tableElements = ele.get(i);
 //            System.out.println(tableElements);

@@ -18,6 +18,9 @@ public class ApplicationConstants {
 
     public static final String UNDP_ORACLE_HCM_IDENTIFIER = "oraclecloud";
 
+    public static final String UNDP_ORACLE_HCM_JOB_DESCR_API = "http://estm.fa.em2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitionDetails?&finder=ById;Id=%22";
+
+
     //    cj_view_job.cfm?cur_job_id=109215
     public static final String UNS_FIELD_DUTY_STATION_KEY = "Duty Station";
 

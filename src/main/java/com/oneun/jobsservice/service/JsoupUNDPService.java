@@ -12,24 +12,29 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Objects;
 
 @Service
 public class JsoupUNDPService {
 
     Logger logger = LoggerFactory.getLogger(JsoupUNDPService.class);
     @Autowired
-    private JobOpeningRepository jobOpeningRepository;
+    private final JobOpeningRepository jobOpeningRepository;
 
     @Autowired
-    private JobOpeningLoadStatusRepository loadStatusRepository;
+    private final JobOpeningLoadStatusRepository loadStatusRepository;
+
+    public JsoupUNDPService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository) {
+        this.jobOpeningRepository = jobOpeningRepository;
+        this.loadStatusRepository = loadStatusRepository;
+    }
 
     //            * "0 0 * * * *" = the top of every hour of every day.
 //            * "*/10 * * * * *" = every ten seconds.
@@ -44,26 +49,22 @@ public class JsoupUNDPService {
         Date startDate = new Date();
 
         Document unsDoc = SSLHelper.getConnection(ApplicationConstants.UNDP_Careers_URL).get();
-        HashMap<String, HashMap<String, String>> hashMap = new HashMap<>();
 
         //fetches all table rows
         Elements ele = unsDoc.getElementsByClass("table-sortable");
         logger.info("UNDP Jobs loading started!");
         int counter = 0;
 
-        double i_max = ele.stream().count();
-        for (int i = 0; i < ele.stream().count(); i++) {
+        double i_max = (long) ele.size();
+        for (int i = 0; i < (long) ele.size(); i++) {
 
             Element tableElements = ele.get(i);
 
             Elements rowElements = tableElements.getElementsByTag("tr");
-            double j_double = rowElements.stream().count();
+            double j_double = (long) rowElements.size();
 
-            for (int j = 0; j < rowElements.stream().count(); j++) {
-                HashMap<String, HashMap<String, String>> hashMap1 = new HashMap<>();
-                HashMap<String, String> hashMap2 = new HashMap<>();
+            for (int j = 0; j < (long) rowElements.size(); j++) {
 
-                int j_max = rowElements.size();
                 Element rowElement = rowElements.get(j);
 
                 if (rowElement.hasAttr("class")) {
@@ -103,7 +104,6 @@ public class JsoupUNDPService {
                                     .replace("HRS_JO_PST_SEQ", "PostingSeq")
                                     .replace("hrs_site_id", "SiteId")
                             : ApplicationConstants.UNDP_POSTING_LINK_URL_PREFIX + postingURLShort;
-                    String undpJobType = rowCells.get(1).text();
                     String undpjobLevel = rowCells.get(2).text();
                     String undpDeadline = rowCells.get(3).text();
                     String undpDutyStation = rowCells.get(4).text();
@@ -127,7 +127,7 @@ public class JsoupUNDPService {
                                 .deadlineDate(undpDeadline)
                                 .dutyStation(undpDutyStation)
                                 .jobTitle(postingTitle.trim())
-                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(postingURL))
+                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(postingURL,undpJobId))
                                 .addedDate(new Date())
                                 .build();
                         counter++;
@@ -144,9 +144,7 @@ public class JsoupUNDPService {
 
         }
 
-        String url1 = "https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/job/5961";
-        String peoplesoftUrl = "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId=42178&SiteId=2&PostingSeq=1";
-//        getAdditionalAttributesFromPostingPage(peoplesoftUrl);
+        //        getAdditionalAttributesFromPostingPage(peoplesoftUrl);
 
         JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
                 .entity(ApplicationConstants.UNDP)
@@ -161,13 +159,22 @@ public class JsoupUNDPService {
 
     }
 
-    private String getAdditionalAttributesFromPostingPage(String url) throws IOException {
+    private String getAdditionalAttributesFromPostingPage(String url, String undpJobId) throws IOException {
         Document postingPageDoc = SSLHelper.getConnection(url).get();
+
+        String jobId = undpJobId.replaceAll(ApplicationConstants.UNDP+"-","");
 
         if (url.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER)) {
 
+            String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API+jobId+"%22";
+
+            System.out.println(apiUrl);
+            RestTemplate restTemplate = new RestTemplate();
+
+            Object[] jobDetails = restTemplate.getForObject(apiUrl,Object[].class);
+
 //            System.out.println(postingPageDoc.getAllElements());
-            return postingPageDoc.select("#job").text();
+            return Arrays.asList(jobDetails).toString();
         } else if (url.contains(ApplicationConstants.UNDP_PARTNER_AGENCIES_URL_IDENTIFIER)) {
 
 //            System.out.println(postingPageDoc.select("#win0divPSPAGECONTAINER").text());
