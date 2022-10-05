@@ -149,7 +149,7 @@ public class JsoupUNDPService {
 //        getAdditionalAttributesFromPostingPage(peoplesoftUrl);
 
         JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
-                .entity(ApplicationConstants.UNS)
+                .entity(ApplicationConstants.UNDP)
                 .endDateTimestamp(new Date())
                 .startDateTimestamp(startDate)
                 .count(counter)

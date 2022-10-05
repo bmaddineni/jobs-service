@@ -41,5 +41,8 @@ public class ApplicationConstants {
     public static final String UNICEF_POSTING_LINK_URL_PREFIX = "https://jobs.unicef.org/en-us/job/";
     public static final String UNDP_PARTNER_AGENCIES_URL_IDENTIFIER = "partner";
 
+    public static final String UNESCO_Careers_URL = "https://careers.unesco.org/go/All-jobs-openings/782502/?q=&sortColumn=referencedate&sortDirection=desc";
     public static final String UNDP_Peoplesoft_URL_PREFIX = "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId";
+    public static final String UNESCO_POSTING_LINK_URL_PREFIX = "https://careers.unesco.org";
+    public static final String UNESCO = "UNESCO";
 }

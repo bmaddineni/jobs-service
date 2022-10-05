@@ -17,7 +17,7 @@ import java.util.Date;
 @Builder
 public class JobOpeningLoadStatus {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
     private String entity;
     private int count;

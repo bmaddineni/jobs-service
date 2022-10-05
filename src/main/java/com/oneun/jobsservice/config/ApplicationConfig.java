@@ -1,9 +1,6 @@
 package com.oneun.jobsservice.config;
 
-import com.oneun.jobsservice.service.JsoupUNDPService;
-import com.oneun.jobsservice.service.JsoupUNICEFService;
-import com.oneun.jobsservice.service.JsoupUNSService;
-import com.oneun.jobsservice.service.JsoupWFPService;
+import com.oneun.jobsservice.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +21,15 @@ public class ApplicationConfig {
     @Autowired
     private JsoupUNICEFService jsoupUNICEFService;
 
+    @Autowired
+    private JsoupUNESCOService jsoupUNESCOService;
+
+
     @Bean
     CommandLineRunner init(){
         return args -> {
             logger.info("Config class has been initialized during start up!");
+
 
             jsoupUNSService.parseUNCareers();
             logger.info("UNS Parsing completed during application start up! ");
@@ -42,6 +44,13 @@ public class ApplicationConfig {
 //
             jsoupUNICEFService.parseUNICEFCareers();
             logger.info("UNICEF Parsing completed during application start up! ");
+
+
+            jsoupUNESCOService.parseUNESCOCareers();
+            logger.info("UNESCO Parsing completed during schedule!");
+
+
+
 
         };
     }

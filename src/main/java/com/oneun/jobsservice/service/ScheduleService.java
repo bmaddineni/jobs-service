@@ -23,27 +23,31 @@ public class ScheduleService {
 
     @Autowired
     private JsoupUNICEFService jsoupUNICEFService;
+    @Autowired
+    private JsoupUNESCOService jsoupUNESCOService;
 
 
 
     @Scheduled(cron = "0 0 * * * *")
     void scheduleAll() throws IOException {
 
-        logger.info("Config class has been initialized during start up!");
+        logger.info("Scheduling Service initialized!");
 
         jsoupUNSService.parseUNCareers();
-        logger.info("UNS Parsing completed during application start up! ");
+        logger.info("UNS Parsing completed during schedule!");
 
         jsoupUNDPService.parseUNDPCareers();
-        logger.info("UNDP Parsing completed during application start up! ");
+        logger.info("UNDP Parsing completed during schedule!");
 
-//
         jsoupWFPService.parseWFPCareers();
-        logger.info("WFP Parsing completed during application start up! ");
-//
-//
+        logger.info("WFP Parsing completed during schedule!");
+
         jsoupUNICEFService.parseUNICEFCareers();
-        logger.info("UNICEF Parsing completed during application start up! ");
+        logger.info("UNICEF Parsing completed during schedule!");
+
+        jsoupUNESCOService.parseUNESCOCareers();
+        logger.info("UNESCO Parsing completed during schedule!");
+
 
     }
 }
