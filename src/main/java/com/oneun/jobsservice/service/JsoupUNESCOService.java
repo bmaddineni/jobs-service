@@ -116,16 +116,17 @@ public class JsoupUNESCOService {
 
 //        System.out.println( getAdditionalAttributesFromPostingPage("https://jobs.unicef.org/en-us/listing/?page=1&page-items=1000"));
 
-            JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
-                    .entity(ApplicationConstants.UNESCO)
-                    .endDateTimestamp(new Date())
-                    .startDateTimestamp(startDate)
-                    .count(counter)
-                    .build();
 
-            loadStatusRepository.save(loadStatus);
 
         }
+        JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
+                .entity(ApplicationConstants.UNESCO)
+                .endDateTimestamp(new Date())
+                .startDateTimestamp(startDate)
+                .count(counter)
+                .build();
+
+        loadStatusRepository.save(loadStatus);
         logger.info(counter + " UNESCO Jobs has been loaded!");
 
     }
