@@ -12,6 +12,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,7 +20,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Objects;
 
 @Service
 public class JsoupUNDPService {
@@ -108,9 +108,6 @@ public class JsoupUNDPService {
                     String undpDeadline = rowCells.get(3).text();
                     String undpDutyStation = rowCells.get(4).text();
 
-//                    "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?JobOpeningId=42178&HRS_JO_PST_SEQ=1&hrs_site_id=2"
-//                    "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId=42178&SiteId=2&PostingSeq=1
-//                    "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId=42178&PostingSeq=1&SiteId=2"
                     if (jobOpeningRepository.findByJobOpeningId(undpJobId).isEmpty()) {
 
                         DecimalFormat decimalFormat = new DecimalFormat("###");
@@ -127,7 +124,7 @@ public class JsoupUNDPService {
                                 .deadlineDate(undpDeadline)
                                 .dutyStation(undpDutyStation)
                                 .jobTitle(postingTitle.trim())
-                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(postingURL,undpJobId))
+                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(postingURL, undpJobId))
                                 .addedDate(new Date())
                                 .build();
                         counter++;
@@ -144,7 +141,6 @@ public class JsoupUNDPService {
 
         }
 
-        //        getAdditionalAttributesFromPostingPage(peoplesoftUrl);
 
         JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
                 .entity(ApplicationConstants.UNDP)
@@ -162,28 +158,35 @@ public class JsoupUNDPService {
     private String getAdditionalAttributesFromPostingPage(String url, String undpJobId) throws IOException {
         Document postingPageDoc = SSLHelper.getConnection(url).get();
 
-        String jobId = undpJobId.replaceAll(ApplicationConstants.UNDP+"-","");
+        String jobId = undpJobId.replaceAll(ApplicationConstants.UNDP + "-", "");
 
         if (url.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER)) {
 
-            String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API+jobId+"%22";
+            String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API + jobId + "%22,siteNumber=CX_1";
+
 
             System.out.println(apiUrl);
+
+
             RestTemplate restTemplate = new RestTemplate();
 
-            Object[] jobDetails = restTemplate.getForObject(apiUrl,Object[].class);
+            HttpHeaders httpHeaders = new HttpHeaders();
 
-//            System.out.println(postingPageDoc.getAllElements());
-            return Arrays.asList(jobDetails).toString();
+            httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
+            HttpEntity<String> entity = new HttpEntity<>("parameters", httpHeaders);
+            ResponseEntity<String> result = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, String.class);
+
+
+            System.out.println(result);
+            return result.toString();
         } else if (url.contains(ApplicationConstants.UNDP_PARTNER_AGENCIES_URL_IDENTIFIER)) {
 
-//            System.out.println(postingPageDoc.select("#win0divPSPAGECONTAINER").text());
             return postingPageDoc.select("#win0divPSPAGECONTAINER").text();
 
         } else {
             return postingPageDoc.select("#content-main").text();
         }
     }
-
 
 }
