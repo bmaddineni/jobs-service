@@ -4,6 +4,7 @@ import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.model.JobOpeningLoadStatus;
+import com.oneun.jobsservice.model.LoadStatus;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.jsoup.nodes.Document;
@@ -107,17 +108,35 @@ public class JsoupUNSService {
                 }
             }
 
+
+            JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
+                    .entity(ApplicationConstants.UNS)
+                    .endDateTimestamp(new Date())
+                    .startDateTimestamp(startDate)
+                    .count(counter)
+                    .loadStatus(LoadStatus.IN_PROGRESS)
+                    .build();
+
+            loadStatusRepository.save(loadStatus);
+
         }
         logger.info(counter +" UNS Jobs has been loaded!");
 
-        JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
-                .entity(ApplicationConstants.UNS)
-                .endDateTimestamp(new Date())
-                .startDateTimestamp(startDate)
-                .count(counter)
-                .build();
 
-        loadStatusRepository.save(loadStatus);
+
+        if (!loadStatusRepository.findByEntity(ApplicationConstants.UNS).isEmpty())
+        {
+            JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
+                    .id(loadStatusRepository.findByEntity(ApplicationConstants.UNS).get(0).getId())
+                    .entity(ApplicationConstants.UNS)
+                    .endDateTimestamp(new Date())
+                    .startDateTimestamp(startDate)
+                    .count(counter)
+                    .loadStatus(LoadStatus.IN_PROGRESS)
+                    .build();
+            loadStatusRepository.save(loadStatus);
+
+        }
 
     }
 

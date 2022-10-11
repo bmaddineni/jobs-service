@@ -165,7 +165,7 @@ public class JsoupUNDPService {
             String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API + jobId + "%22,siteNumber=CX_1";
 
 
-            System.out.println(apiUrl);
+//            System.out.println(apiUrl);
 
 
             RestTemplate restTemplate = new RestTemplate();
@@ -178,7 +178,7 @@ public class JsoupUNDPService {
             ResponseEntity<String> result = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, String.class);
 
 
-            System.out.println(result);
+//            System.out.println(result);
             return result.toString();
         } else if (url.contains(ApplicationConstants.UNDP_PARTNER_AGENCIES_URL_IDENTIFIER)) {
 

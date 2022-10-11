@@ -20,7 +20,8 @@ public class JobOpening {
 
     private String unEntity;
     private String jobOpeningId;
-    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+//    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+@Column(columnDefinition = "TEXT")
     private String jobTitle;
     private String dutyStation;
     private String jobFamily;
@@ -30,14 +31,18 @@ public class JobOpening {
     private String postedDate;
     private String deadlineDate;
 //    CHARACTER LARGE OBJECT
-@Column(columnDefinition = "CHARACTER LARGE OBJECT")
+//@Column(columnDefinition = "CHARACTER LARGE OBJECT")
+@Column(columnDefinition = "TEXT")
     private String postingUrl;
+
     private String wfpTypeOfContract;
 
-    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+//    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+@Column(columnDefinition = "TEXT")
 private String unicefJobDescrBasic;
 
-    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+//    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+@Column(columnDefinition = "TEXT")
     private String postingDescrRaw;
 
     private Date addedDate;

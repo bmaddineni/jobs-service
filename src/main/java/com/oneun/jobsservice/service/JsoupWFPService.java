@@ -115,7 +115,7 @@ public class JsoupWFPService {
     }
 
     private String getAdditionalAttributesFromPostingPage(String url) throws IOException {
-        Document postingPageDoc = SSLHelper.getConnection(url).get();
+        Document postingPageDoc = SSLHelper.getConnection(url).timeout(10000).get();
 
         return postingPageDoc.select("#jobAppPageTitle").text();
 

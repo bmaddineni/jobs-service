@@ -23,4 +23,6 @@ public class JobOpeningLoadStatus {
     private int count;
     private Date startDateTimestamp;
     private Date endDateTimestamp;
+    private LoadStatus loadStatus;
+//    private
 }
