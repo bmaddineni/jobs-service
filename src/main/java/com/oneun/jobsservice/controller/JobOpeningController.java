@@ -22,12 +22,14 @@ public class JobOpeningController {
     @Autowired
     private JobOpeningLoadStatusService loadStatus;
 
+    @CrossOrigin
     @GetMapping
     public Iterable findAll() {
 
         return jobOpeningService.findAll();
     }
 
+    @CrossOrigin
     @GetMapping("/job/{joId}")
     public Iterable findByJobOpeningId(@PathVariable String joId) {
 
@@ -35,6 +37,7 @@ public class JobOpeningController {
 
     }
 
+    @CrossOrigin
     @GetMapping("/entity/{unEntity}")
     public Iterable findByEntity(@PathVariable String unEntity) {
 
@@ -42,6 +45,7 @@ public class JobOpeningController {
 
     }
 
+    @CrossOrigin
     @GetMapping("/status")
     public Iterable getStatus() {
 
