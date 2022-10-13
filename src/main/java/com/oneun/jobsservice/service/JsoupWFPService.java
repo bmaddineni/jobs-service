@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class JsoupWFPService {
 //            * "0 0 9-17 * * MON-FRI" = on the hour nine-to-five weekdays
 //            * "0 0 0 25 12 ?" = every Christmas Day at midnight
 //    @Scheduled(cron = "0 0/1 * * * *")
-    public void parseWFPCareers() throws IOException {
+    public void parseWFPCareers() throws IOException, SocketException  {
         Date startDate = new Date();
 
 
@@ -93,7 +94,14 @@ public class JsoupWFPService {
 
             }
 
+            JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
+                    .entity(ApplicationConstants.WFP)
+                    .endDateTimestamp(new Date())
+                    .startDateTimestamp(startDate)
+                    .count(counter)
+                    .build();
 
+            loadStatusRepository.save(loadStatus);
 
 
         }
@@ -102,19 +110,12 @@ public class JsoupWFPService {
 
 //        System.out.println( getAdditionalAttributesFromPostingPage("https://jobs.unicef.org/en-us/listing/?page=1&page-items=1000"));
 
-        JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
-                .entity(ApplicationConstants.WFP)
-                .endDateTimestamp(new Date())
-                .startDateTimestamp(startDate)
-                .count(counter)
-                .build();
 
-        loadStatusRepository.save(loadStatus);
         logger.info(counter + " WFP Jobs has been loaded!");
 
     }
 
-    private String getAdditionalAttributesFromPostingPage(String url) throws IOException {
+    private String getAdditionalAttributesFromPostingPage(String url) throws IOException, SocketException {
         Document postingPageDoc = SSLHelper.getConnection(url).timeout(10000).get();
 
         return postingPageDoc.select("#jobAppPageTitle").text();

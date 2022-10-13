@@ -35,4 +35,8 @@ public class JobOpeningService {
     }
 
 
+    public List<JobOpening> keywordSearch(String keyword) {
+
+        return jobOpeningRepository.search(keyword);
+    }
 }

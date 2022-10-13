@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -44,7 +45,7 @@ public class JsoupUNDPService {
 //            * "0 0 9-17 * * MON-FRI" = on the hour nine-to-five weekdays
 //            * "0 0 0 25 12 ?" = every Christmas Day at midnight
 //    @Scheduled(cron = "0 0/1 * * * *")
-    public void parseUNDPCareers() throws IOException {
+    public void parseUNDPCareers() throws IOException , SocketException  {
 
         Date startDate = new Date();
 
@@ -155,7 +156,7 @@ public class JsoupUNDPService {
 
     }
 
-    private String getAdditionalAttributesFromPostingPage(String url, String undpJobId) throws IOException {
+    private String getAdditionalAttributesFromPostingPage(String url, String undpJobId) throws IOException , SocketException {
         Document postingPageDoc = SSLHelper.getConnection(url).get();
 
         String jobId = undpJobId.replaceAll(ApplicationConstants.UNDP + "-", "");

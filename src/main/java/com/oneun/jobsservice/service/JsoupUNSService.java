@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class JsoupUNSService {
 //            * "0 0 9-17 * * MON-FRI" = on the hour nine-to-five weekdays
 //            * "0 0 0 25 12 ?" = every Christmas Day at midnight
 //    @Scheduled(cron = "0 0/30 * * * *")
-    public void parseUNCareers() throws IOException {
+    public void parseUNCareers() throws IOException, SocketException {
 
 
         Date startDate = new Date();
@@ -127,7 +128,7 @@ public class JsoupUNSService {
         if (!loadStatusRepository.findByEntity(ApplicationConstants.UNS).isEmpty())
         {
             JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
-                    .id(loadStatusRepository.findByEntity(ApplicationConstants.UNS).get(0).getId())
+//                    .id(loadStatusRepository.findByEntity(ApplicationConstants.UNS).get(0).getId())
                     .entity(ApplicationConstants.UNS)
                     .endDateTimestamp(new Date())
                     .startDateTimestamp(startDate)
@@ -155,7 +156,7 @@ public class JsoupUNSService {
 
 
 
-    private String getAdditionalAttributesFromPostingPage(String url) throws IOException {
+    private String getAdditionalAttributesFromPostingPage(String url) throws IOException, SocketException  {
         Document postingPageDoc = SSLHelper.getConnection(url).get();
 
         return postingPageDoc.select("#jd_content").text();

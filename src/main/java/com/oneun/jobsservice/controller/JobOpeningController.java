@@ -1,16 +1,11 @@
 package com.oneun.jobsservice.controller;
 
 import com.oneun.jobsservice.model.JobOpening;
-import com.oneun.jobsservice.model.JobOpeningLoadStatus;
-import com.oneun.jobsservice.repository.JobOpeningRepository;
 import com.oneun.jobsservice.service.JobOpeningLoadStatusService;
 import com.oneun.jobsservice.service.JobOpeningService;
-import com.oneun.jobsservice.service.JsoupUNSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/jobs")
@@ -35,6 +30,13 @@ public class JobOpeningController {
 
         return jobOpeningService.findByJobOpeningId(joId);
 
+    }
+
+    @CrossOrigin
+    @GetMapping("/search")
+    public Iterable keywordSearch(@RequestParam String keyword){
+
+        return jobOpeningService.keywordSearch(keyword.toLowerCase());
     }
 
     @CrossOrigin
