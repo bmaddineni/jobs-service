@@ -163,7 +163,7 @@ public class JsoupUNDPService {
 
         if (url.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER)) {
 
-            String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API + jobId + "%22,siteNumber=CX_1";
+            String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API + jobId ;
 
 
 //            System.out.println(apiUrl);

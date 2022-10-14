@@ -18,7 +18,7 @@ public class ApplicationConstants {
 
     public static final String UNDP_ORACLE_HCM_IDENTIFIER = "oraclecloud";
 
-    public static final String UNDP_ORACLE_HCM_JOB_DESCR_API = "http://estm.fa.em2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitionDetails?&finder=ById;Id=%22";
+    public static final String UNDP_ORACLE_HCM_JOB_DESCR_API = "http://estm.fa.em2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitionDetails?&finder=ById;Id=";
 
 
     //    cj_view_job.cfm?cur_job_id=109215
@@ -48,4 +48,11 @@ public class ApplicationConstants {
     public static final String UNDP_Peoplesoft_URL_PREFIX = "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId";
     public static final String UNESCO_POSTING_LINK_URL_PREFIX = "https://careers.unesco.org";
     public static final String UNESCO = "UNESCO";
+
+
+    public static final String WHO = "WHO";
+
+    public static final String WHO_Careers_URL = "https://careers.who.int/careersection/ex/jobsearch.ftl";
+
+    public static final String UNHCR = "UNHCR";
 }
