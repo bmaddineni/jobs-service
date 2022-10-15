@@ -76,6 +76,28 @@ public class JsoupUNDPService {
                     String postingURLShort = rowCells.get(0).getElementsByTag("a").get(0).attr("href");
 
 
+                    String undpJobIdWithoutPrefix = postingURLShort.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER) ?
+                             Arrays.stream(rowCells.get(0)
+                                            .getElementsByTag("a")
+                                            .get(0).attr("href")
+                                            .split("/job/"))
+                                    .toArray()[1].toString()
+
+                            : postingURLShort.contains(ApplicationConstants.UNDP_PARTNER_AGENCIES_URL_IDENTIFIER) ?
+
+                            Arrays.stream(Arrays.stream(rowCells.get(0)
+                                                    .getElementsByTag("a")
+                                                    .get(0).attr("href")
+                                                    .split("="))
+                                            .toArray()[1].toString().split("&"))
+                                    .toArray()[0].toString()
+
+                            : Arrays.stream(rowCells.get(0)
+                                    .getElementsByTag("a")
+                                    .get(0).attr("href")
+                                    .split("="))
+                            .toArray()[1].toString();
+
                     String undpJobId = postingURLShort.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER) ?
                             ApplicationConstants.UNDP + "-" + Arrays.stream(rowCells.get(0)
                                             .getElementsByTag("a")
@@ -108,6 +130,7 @@ public class JsoupUNDPService {
                     String undpjobLevel = rowCells.get(2).text();
                     String undpDeadline = rowCells.get(3).text();
                     String undpDutyStation = rowCells.get(4).text();
+                    if (undpJobId != null) {
 
                     if (jobOpeningRepository.findByJobOpeningId(undpJobId).isEmpty()) {
 
@@ -125,15 +148,14 @@ public class JsoupUNDPService {
                                 .deadlineDate(undpDeadline)
                                 .dutyStation(undpDutyStation)
                                 .jobTitle(postingTitle.trim())
-                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(postingURL, undpJobId))
+                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(postingURL, undpJobIdWithoutPrefix))
                                 .addedDate(new Date())
                                 .build();
                         counter++;
                         jobOpeningRepository.save(jobOpening);
 
-
                     }
-
+                    }
 
                 }
 
@@ -159,15 +181,10 @@ public class JsoupUNDPService {
     private String getAdditionalAttributesFromPostingPage(String url, String undpJobId) throws IOException , SocketException {
         Document postingPageDoc = SSLHelper.getConnection(url).get();
 
-        String jobId = undpJobId.replaceAll(ApplicationConstants.UNDP + "-", "");
 
         if (url.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER)) {
 
-            String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API + jobId ;
-
-
-//            System.out.println(apiUrl);
-
+            String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API + undpJobId ;
 
             RestTemplate restTemplate = new RestTemplate();
 
@@ -175,11 +192,9 @@ public class JsoupUNDPService {
 
             httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
-            HttpEntity<String> entity = new HttpEntity<>("parameters", httpHeaders);
-            ResponseEntity<String> result = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> result = restTemplate.exchange(apiUrl, HttpMethod.GET, HttpEntity.EMPTY, String.class);
 
 
-//            System.out.println(result);
             return result.toString();
         } else if (url.contains(ApplicationConstants.UNDP_PARTNER_AGENCIES_URL_IDENTIFIER)) {
 

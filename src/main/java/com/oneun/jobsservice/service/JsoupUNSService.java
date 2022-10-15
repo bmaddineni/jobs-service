@@ -78,33 +78,35 @@ public class JsoupUNSService {
 
 
 //                    System.out.println(jobOpeningRepository.findByJobOpeningId(jo).isEmpty());
+                    if (jo != null) {
 
-                    if (jobOpeningRepository.findByJobOpeningId(jo).isEmpty()) {
-                        counter++;
+                        if (jobOpeningRepository.findByJobOpeningId(jo).isEmpty()) {
+                            counter++;
 
-                        JobOpening jobOpening = JobOpening.builder()
-                                .jobOpeningId(jo)
-                                .jobTitle(jobHeader.get(ApplicationConstants.UNS_FIELD_JOB_TITLE_KEY).toString())
-                                .unEntity(
-                                        jobHeader.get(ApplicationConstants.UNS_FIELD_DEPT_OFFICE_KEY).contains(ApplicationConstants.UNRWA) ? ApplicationConstants.UNRWA
-                                                : jobHeader.get(ApplicationConstants.UNS_FIELD_DEPT_OFFICE_KEY).contains(ApplicationConstants.ICAO_DESCR) ? ApplicationConstants.ICAO
-                                                : ApplicationConstants.UNS
-                                )
-                                .deadlineDate(jobHeader.get(ApplicationConstants.UNS_FIELD_DEADLINE_DATE_KEY).toString())
-                                .postingUrl(ApplicationConstants.UNS_POSTING_LINK_URL_PREFIX + jobHeader.get(ApplicationConstants.UNS_FIELD_POSTING_URL_KEY))
-                                .level(jobHeader.get(ApplicationConstants.UNS_FIELD_LEVEL_KEY))
-                                .departmentOffice(jobHeader.get(ApplicationConstants.UNS_FIELD_DEPT_OFFICE_KEY))
-                                .dutyStation(jobHeader.get(ApplicationConstants.UNS_FIELD_DUTY_STATION_KEY))
-                                .jobFamily(jobHeader.get(ApplicationConstants.UNS_FIELD_JOB_FAMILY_KEY))
-                                .jobNetwork(jobHeader.get(ApplicationConstants.UNS_FIELD_JOB_NETWORK_KEY))
-                                .postedDate(jobHeader.get(ApplicationConstants.UNS_FIELD_POSTED_DATE_KEY))
-                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(ApplicationConstants.UNS_POSTING_LINK_URL_PREFIX + jobHeader.get(ApplicationConstants.UNS_FIELD_POSTING_URL_KEY)))
-                                .addedDate(new Date())
-                                .build();
+                            JobOpening jobOpening = JobOpening.builder()
+                                    .jobOpeningId(jo)
+                                    .jobTitle(jobHeader.get(ApplicationConstants.UNS_FIELD_JOB_TITLE_KEY).toString())
+                                    .unEntity(
+                                            jobHeader.get(ApplicationConstants.UNS_FIELD_DEPT_OFFICE_KEY).contains(ApplicationConstants.UNRWA) ? ApplicationConstants.UNRWA
+                                                    : jobHeader.get(ApplicationConstants.UNS_FIELD_DEPT_OFFICE_KEY).contains(ApplicationConstants.ICAO_DESCR) ? ApplicationConstants.ICAO
+                                                    : ApplicationConstants.UNS
+                                    )
+                                    .deadlineDate(jobHeader.get(ApplicationConstants.UNS_FIELD_DEADLINE_DATE_KEY).toString())
+                                    .postingUrl(ApplicationConstants.UNS_POSTING_LINK_URL_PREFIX + jobHeader.get(ApplicationConstants.UNS_FIELD_POSTING_URL_KEY))
+                                    .level(jobHeader.get(ApplicationConstants.UNS_FIELD_LEVEL_KEY))
+                                    .departmentOffice(jobHeader.get(ApplicationConstants.UNS_FIELD_DEPT_OFFICE_KEY))
+                                    .dutyStation(jobHeader.get(ApplicationConstants.UNS_FIELD_DUTY_STATION_KEY))
+                                    .jobFamily(jobHeader.get(ApplicationConstants.UNS_FIELD_JOB_FAMILY_KEY))
+                                    .jobNetwork(jobHeader.get(ApplicationConstants.UNS_FIELD_JOB_NETWORK_KEY))
+                                    .postedDate(jobHeader.get(ApplicationConstants.UNS_FIELD_POSTED_DATE_KEY))
+                                    .postingDescrRaw(getAdditionalAttributesFromPostingPage(ApplicationConstants.UNS_POSTING_LINK_URL_PREFIX + jobHeader.get(ApplicationConstants.UNS_FIELD_POSTING_URL_KEY)))
+                                    .addedDate(new Date())
+                                    .build();
 
 
-                        jobOpeningRepository.save(jobOpening);
+                            jobOpeningRepository.save(jobOpening);
 
+                        }
                     }
                 }
             }

@@ -4,8 +4,11 @@ import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.service.JobOpeningLoadStatusService;
 import com.oneun.jobsservice.service.JobOpeningService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/jobs")
@@ -34,16 +37,16 @@ public class JobOpeningController {
 
     @CrossOrigin
     @GetMapping("/search")
-    public Iterable keywordSearch(@RequestParam String keyword){
+    public List<JobOpening> keywordSearch(@RequestParam String keyword){
 
         return jobOpeningService.keywordSearch(keyword.toLowerCase());
     }
 
     @CrossOrigin
     @GetMapping("/entity/{unEntity}")
-    public Iterable findByEntity(@PathVariable String unEntity) {
+    public Iterable findByEntity(@PathVariable String unEntity,@RequestParam int page, @RequestParam int size) {
 
-        return jobOpeningService.findByUnEntity(unEntity);
+        return jobOpeningService.findByUnEntity(unEntity,page,size);
 
     }
 
@@ -62,4 +65,9 @@ public class JobOpeningController {
         return jobOpeningService.save(jobOpening);
     }
 
+    @GetMapping("/paged")
+    public Page<JobOpening> findByTitle(@RequestParam int page, @RequestParam int size){
+
+        return jobOpeningService.findAllWithPagination(page,size);
+    }
 }

@@ -85,26 +85,27 @@ public class JsoupUNESCOService {
 
 //            System.out.println(tableElements);
 
+                if (unescoJobId != null) {
 
-                if (jobOpeningRepository.findByJobOpeningId(unescoJobId).isEmpty()) {
-                    counter++;
-                    JobOpening jobOpening = JobOpening.builder()
-                            .jobOpeningId(unescoJobId)
-                            .unEntity(ApplicationConstants.UNESCO)
-                            .deadlineDate(unescoDeadlineDate)
-                            .dutyStation(unescoDutyStation)
-                            .jobFamily(unescoJobFacility)
-                            .jobTitle(unescoJobTitle)
-                            .postingUrl(unescoJobURL)
-                            .level(unescoGradeLevel)
-                            .addedDate(new Date())
-                            .postingDescrRaw(getAdditionalAttributesFromPostingPage(unescoJobURL))
+                    if (jobOpeningRepository.findByJobOpeningId(unescoJobId).isEmpty()) {
+                        counter++;
+                        JobOpening jobOpening = JobOpening.builder()
+                                .jobOpeningId(unescoJobId)
+                                .unEntity(ApplicationConstants.UNESCO)
+                                .deadlineDate(unescoDeadlineDate)
+                                .dutyStation(unescoDutyStation)
+                                .jobFamily(unescoJobFacility)
+                                .jobTitle(unescoJobTitle)
+                                .postingUrl(unescoJobURL)
+                                .level(unescoGradeLevel)
+                                .addedDate(new Date())
+                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(unescoJobURL))
 
-                            .build();
-                    jobOpeningRepository.save(jobOpening);
+                                .build();
+                        jobOpeningRepository.save(jobOpening);
 
+                    }
                 }
-
 
             }
 

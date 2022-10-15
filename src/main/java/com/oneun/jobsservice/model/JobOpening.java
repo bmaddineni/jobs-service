@@ -1,5 +1,6 @@
 package com.oneun.jobsservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,12 +39,16 @@ public class JobOpening {
     private String wfpTypeOfContract;
 
 //    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+    @JsonIgnore
 @Column(columnDefinition = "TEXT")
 private String unicefJobDescrBasic;
 
 //    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
+    @JsonIgnore
 @Column(columnDefinition = "TEXT")
     private String postingDescrRaw;
 
     private Date addedDate;
+
+    private JobpostingStatus jobpostingStatus;
 }

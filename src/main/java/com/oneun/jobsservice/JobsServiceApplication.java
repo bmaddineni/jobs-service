@@ -14,7 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class JobsServiceApplication {
 
-	public JobsServiceApplication(JsoupUNHCRService jsoupUNHCRService, JsoupUNSService jsoupUNSService, JsoupUNDPService jsoupUNDPService, JsoupWFPService jsoupWFPService, JsoupUNICEFService jsoupUNICEFService, JsoupUNESCOService jsoupUNESCOService) {
+	public JobsServiceApplication(JsoupIMFService jsoupIMFService,JsoupUNHCRService jsoupUNHCRService, JsoupUNSService jsoupUNSService, JsoupUNDPService jsoupUNDPService, JsoupWFPService jsoupWFPService, JsoupUNICEFService jsoupUNICEFService, JsoupUNESCOService jsoupUNESCOService) {
+		this.jsoupIMFService = jsoupIMFService;
 		this.jsoupUNHCRService = jsoupUNHCRService;
 		this.jsoupUNSService = jsoupUNSService;
 		this.jsoupUNDPService = jsoupUNDPService;
@@ -28,6 +29,9 @@ public class JobsServiceApplication {
 	}
 
 	Logger logger = LoggerFactory.getLogger(JobsServiceApplication.class);
+
+	@Autowired
+	private JsoupIMFService jsoupIMFService;
 
 	@Autowired
 	private JsoupUNHCRService jsoupUNHCRService;
@@ -50,6 +54,9 @@ public class JobsServiceApplication {
 		return args -> {
 			logger.info("Config class has been initialized during start up!");
 
+
+			logger.info("IMF loading started");
+			jsoupIMFService.parseIMFCareers();
 
 			logger.info("UNHCR loading started");
 //			jsoupUNHCRService.testUNDPHCMAPI();

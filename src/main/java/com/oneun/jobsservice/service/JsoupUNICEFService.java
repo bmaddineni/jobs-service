@@ -12,7 +12,6 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,17 +30,9 @@ public class JsoupUNICEFService {
     @Autowired
     private JobOpeningLoadStatusRepository loadStatusRepository;
 
-//            * "0 0 * * * *" = the top of every hour of every day.
-//            * "*/10 * * * * *" = every ten seconds.
-//            * "0 0 8-10 * * *" = 8, 9 and 10 o'clock of every day.
-//            * "0 0 0,6,12,18 * * *" = 12 am, 6 am, 12 pm and 6 pm of every day.
-//            * "0 0/30 8-10 * * *" = 8:00, 8:30, 9:00, 9:30 and 10 o'clock every day.
-//            * "0 0 9-17 * * MON-FRI" = on the hour nine-to-five weekdays
-//            * "0 0 0 25 12 ?" = every Christmas Day at midnight
-//    @Scheduled(cron = "0 0/10 * * * *")
     public void parseUNICEFCareers() throws IOException,StringIndexOutOfBoundsException,  SocketException  {
 
-int counter = 0;
+        int counter = 0;
         Date startDate = new Date();
 
         Document unicefDoc = SSLHelper.getConnection(ApplicationConstants.UNICEF_Careers_URL).get();
@@ -60,7 +51,6 @@ int counter = 0;
 
             String unicefJobPostingURLFull= tableElements.getElementsByAttribute("href").get(0).attr("href");
 
-//            String unicefJobPostingURL= (unicefJobPostingURLString.length()>254) ? unicefJobPostingURLString.substring(0,254) : unicefJobPostingURLString;
                     String unicefJobId = Arrays.stream(Arrays.stream(unicefJobPostingURLFull
                     .split("/job/"))
                         .toArray()[1].toString()
@@ -69,21 +59,17 @@ int counter = 0;
             String unicefJobPostingURL=ApplicationConstants.UNICEF_POSTING_LINK_URL_PREFIX+unicefJobId;
             String unicefPostingTitle = tableElements.getElementsByAttribute("href").get(0).text();
 
-//            System.out.println(unicefJobId + " --->  " + unicefPostingTitle.length());
-//            String unicefLevelFromPostingTitle = Arrays.stream(unicefPostingTitle.split(",")).toArray()[1].toString();
 
-            String unicefDeadlineDate = tableElements.getElementsByTag("p").get(3).text();
+            String unicefDeadlineDate = tableElements.getElementsByTag("p").get(3).text().replace("Deadline: ","");
             String unicefDutyStation = tableElements.getElementsByClass("location").get(0).text();
             String unicefBasicJobDescription = tableElements.getElementsByTag("p").get(1).text();
 
-//            System.out.println(unicefBasicJobDescription);
+            if (unicefJobId != null) {
 
-
-
-//
-            if(jobOpeningRepository.findByJobOpeningId(unicefJobId).isEmpty()){
+            }
+            if(unicefJobId != null && jobOpeningRepository.findByJobOpeningId(unicefJobId).isEmpty()){
                 JobOpening jobOpening = JobOpening.builder()
-                        .jobOpeningId(unicefJobId)
+                        .jobOpeningId(ApplicationConstants.UNICEF+"-"+unicefJobId)
                         .postingUrl(unicefJobPostingURL)
                         .dutyStation(unicefDutyStation)
                         .deadlineDate(unicefDeadlineDate)
@@ -106,7 +92,6 @@ int counter = 0;
 
 
 
-//        System.out.println( getAdditionalAttributesFromPostingPage("https://jobs.unicef.org/en-us/listing/?page=1&page-items=1000"));
         JobOpeningLoadStatus loadStatus = JobOpeningLoadStatus.builder()
                 .entity(ApplicationConstants.UNICEF)
                 .endDateTimestamp(new Date())

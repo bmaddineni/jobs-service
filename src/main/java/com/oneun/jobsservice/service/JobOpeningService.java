@@ -3,6 +3,8 @@ package com.oneun.jobsservice.service;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,9 +25,9 @@ public class JobOpeningService {
        return jobOpeningRepository.findByJobOpeningId(joId);
     }
 
-    public Iterable findByUnEntity(String unEntity) {
+    public Page<JobOpening> findByUnEntity(String unEntity, int page, int size) {
 
-       return jobOpeningRepository.findByUnEntity(unEntity);
+       return jobOpeningRepository.findByUnEntity(unEntity,PageRequest.of(page,size));
     }
 
 
@@ -38,5 +40,10 @@ public class JobOpeningService {
     public List<JobOpening> keywordSearch(String keyword) {
 
         return jobOpeningRepository.search(keyword);
+    }
+
+    public Page<JobOpening> findAllWithPagination(int page, int size)
+    {
+        return jobOpeningRepository.findAll(PageRequest.of(page,size));
     }
 }

@@ -102,20 +102,23 @@ public class JsoupUNHCRService {
             String jobPostingDescr = jsonJobPosting.getJSONObject("jobPostingInfo").getString("jobDescription");
 //            System.out.println();
 
-            if (jobOpeningRepository.findByJobOpeningId(jobId).isEmpty()) {
+            if (jobId != null) {
 
-                JobOpening jobOpening = JobOpening.builder()
-                        .jobOpeningId(jobId)
-                        .level(level)
-                        .jobTitle(title)
-                        .postingUrl(url)
-                        .dutyStation(dutyStation)
-                        .postingDescrRaw(jobPostingDescr)
-                        .addedDate(new Date())
-                        .unEntity(ApplicationConstants.UNHCR)
-                        .build();
+                if (jobOpeningRepository.findByJobOpeningId(jobId).isEmpty()) {
 
-                jobOpeningRepository.save(jobOpening);
+                    JobOpening jobOpening = JobOpening.builder()
+                            .jobOpeningId(jobId)
+                            .level(level)
+                            .jobTitle(title)
+                            .postingUrl(url)
+                            .dutyStation(dutyStation)
+                            .postingDescrRaw(jobPostingDescr)
+                            .addedDate(new Date())
+                            .unEntity(ApplicationConstants.UNHCR)
+                            .build();
+
+                    jobOpeningRepository.save(jobOpening);
+                }
             }
 
         }
