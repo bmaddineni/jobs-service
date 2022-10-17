@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class JobsServiceApplication {
 
-	public JobsServiceApplication(JsoupIMFService jsoupIMFService,JsoupUNHCRService jsoupUNHCRService, JsoupUNSService jsoupUNSService, JsoupUNDPService jsoupUNDPService, JsoupWFPService jsoupWFPService, JsoupUNICEFService jsoupUNICEFService, JsoupUNESCOService jsoupUNESCOService) {
+	public JobsServiceApplication(JsoupILOService jsoupILOService, JsoupIMFService jsoupIMFService,JsoupUNHCRService jsoupUNHCRService, JsoupUNSService jsoupUNSService, JsoupUNDPService jsoupUNDPService, JsoupWFPService jsoupWFPService, JsoupUNICEFService jsoupUNICEFService, JsoupUNESCOService jsoupUNESCOService) {
 		this.jsoupIMFService = jsoupIMFService;
 		this.jsoupUNHCRService = jsoupUNHCRService;
 		this.jsoupUNSService = jsoupUNSService;
@@ -22,6 +22,7 @@ public class JobsServiceApplication {
 		this.jsoupWFPService = jsoupWFPService;
 		this.jsoupUNICEFService = jsoupUNICEFService;
 		this.jsoupUNESCOService = jsoupUNESCOService;
+		this.jsoupILOService = jsoupILOService;
 	}
 
 	public static void main(String[] args) {
@@ -48,12 +49,23 @@ public class JobsServiceApplication {
 	@Autowired
 	private JsoupUNESCOService jsoupUNESCOService;
 
+	@Autowired
+	private JsoupILOService jsoupILOService;
+
+	@Autowired
+	private JsoupUNFPAService jsoupUNFPAService;
+
 
 	@Bean
 	CommandLineRunner init(){
 		return args -> {
 			logger.info("Config class has been initialized during start up!");
 
+			logger.info("UNFPA loading started");
+			jsoupUNFPAService.parseUNFPACareers();
+
+			logger.info("ILO loading started");
+			jsoupILOService.parseILOCareers();
 
 			logger.info("IMF loading started");
 			jsoupIMFService.parseIMFCareers();

@@ -20,6 +20,7 @@ public class ApplicationConstants {
 
     public static final String UNDP_ORACLE_HCM_JOB_DESCR_API = "https://estm.fa.em2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitionDetails?&finder=ById;Id=";
 
+    public static final String UNFPA_ORACLE_HCM_JOB_DESCR_API = "https://estm.fa.em2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitionDetails?&finder=ById;siteNumber=CX_2003,Id=";
 
     //    cj_view_job.cfm?cur_job_id=109215
     public static final String UNS_FIELD_DUTY_STATION_KEY = "Duty Station";
@@ -44,9 +45,14 @@ public class ApplicationConstants {
     public static final String UNICEF_POSTING_LINK_URL_PREFIX = "https://jobs.unicef.org/en-us/job/";
     public static final String UNDP_PARTNER_AGENCIES_URL_IDENTIFIER = "partner";
 
+    public static final String ILO_Careers_URL = "https://jobs.ilo.org/go/All-Jobs/2842101/?q=&sortColumn=referencedate&sortDirection=desc";
+
+
     public static final String UNESCO_Careers_URL = "https://careers.unesco.org/go/All-jobs-openings/782502/?q=&sortColumn=referencedate&sortDirection=desc";
     public static final String UNDP_Peoplesoft_URL_PREFIX = "https://jobs.partneragencies.net/psc/UNDPP1HRE2/EMPLOYEE/HRMS/c/HRS_HRAM.HRS_CE.GBL?Page=HRS_CE_JOB_DTL&Action=A&JobOpeningId";
     public static final String UNESCO_POSTING_LINK_URL_PREFIX = "https://careers.unesco.org";
+    public static final String ILO_POSTING_LINK_URL_PREFIX = "https://jobs.ilo.org";
+
     public static final String UNESCO = "UNESCO";
 
 
@@ -56,4 +62,12 @@ public class ApplicationConstants {
 
     public static final String UNHCR = "UNHCR";
     public static final String IMF = "IMF";
+    public static final String ILO = "ILO";
+
+    public static final String UNFPAJobsEndpointURL = "https://estm.fa.em2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions?onlyData=true&expand=requisitionList.secondaryLocations,flexFieldsFacet.values&finder=findReqs;siteNumber=CX_2003,limit=24";
+
+    public static final String UNFPARequisitionURL= "https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2003/requisitions/job/";
+    public static final String UNFPA = "UNFPA";
+
+    public static final String UNFPARequisitionApiURL = "https://estm.fa.em2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitionDetails?expand=all&onlyData=true&finder=ById;siteNumber=CX_2003,Id=";
 }

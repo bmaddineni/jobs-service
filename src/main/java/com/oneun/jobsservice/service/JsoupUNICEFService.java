@@ -51,7 +51,7 @@ public class JsoupUNICEFService {
 
             String unicefJobPostingURLFull= tableElements.getElementsByAttribute("href").get(0).attr("href");
 
-                    String unicefJobId = Arrays.stream(Arrays.stream(unicefJobPostingURLFull
+                    String unicefJobId = ApplicationConstants.UNICEF+"-"+Arrays.stream(Arrays.stream(unicefJobPostingURLFull
                     .split("/job/"))
                         .toArray()[1].toString()
                     .split("/"))
@@ -66,10 +66,10 @@ public class JsoupUNICEFService {
 
             if (unicefJobId != null) {
 
-            }
-            if(unicefJobId != null && jobOpeningRepository.findByJobOpeningId(unicefJobId).isEmpty()){
+
+            if(unicefJobId != null && jobOpeningRepository.findByJobOpeningId(unicefJobId).isEmpty()) {
                 JobOpening jobOpening = JobOpening.builder()
-                        .jobOpeningId(ApplicationConstants.UNICEF+"-"+unicefJobId)
+                        .jobOpeningId(unicefJobId)
                         .postingUrl(unicefJobPostingURL)
                         .dutyStation(unicefDutyStation)
                         .deadlineDate(unicefDeadlineDate)
@@ -82,7 +82,7 @@ public class JsoupUNICEFService {
                 counter++;
 
                 jobOpeningRepository.save(jobOpening);
-
+            }
             }
 
 
