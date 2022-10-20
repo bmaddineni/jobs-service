@@ -1,5 +1,6 @@
 package com.oneun.jobsservice.service;
 
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,8 @@ public class ScheduleService {
 
 
 
-    @Scheduled(cron = "0 0 * * * *")
-    void scheduleAll() throws IOException {
+//    @Scheduled(cron = "0 0 * * * *")
+    void scheduleAll() throws IOException, JSONException {
 
         logger.info("Scheduling Service initialized!");
 

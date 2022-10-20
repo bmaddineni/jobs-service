@@ -5,6 +5,7 @@ import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.model.JobOpeningLoadStatus;
 import com.oneun.jobsservice.model.LoadStatus;
+import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.jsoup.nodes.Document;
@@ -12,7 +13,6 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -30,7 +30,16 @@ public class JsoupUNSService {
     @Autowired
     private JobOpeningLoadStatusRepository loadStatusRepository;
 
-//            * "0 0 * * * *" = the top of every hour of every day.
+    @Autowired
+    private JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository;
+
+    public JsoupUNSService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository, JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository) {
+        this.jobOpeningRepository = jobOpeningRepository;
+        this.loadStatusRepository = loadStatusRepository;
+        this.jobOpeningElasticSearchRepository = jobOpeningElasticSearchRepository;
+    }
+
+    //            * "0 0 * * * *" = the top of every hour of every day.
 //            * "*/10 * * * * *" = every ten seconds.
 //            * "0 0 8-10 * * *" = 8, 9 and 10 o'clock of every day.
 //            * "0 0 0,6,12,18 * * *" = 12 am, 6 am, 12 pm and 6 pm of every day.
@@ -107,6 +116,37 @@ public class JsoupUNSService {
                             jobOpeningRepository.save(jobOpening);
 
                         }
+
+
+
+                        if (jobOpeningElasticSearchRepository.findByJobOpeningId(jo).isEmpty()) {
+
+                            com.oneun.jobsservice.model.elastic.JobOpening jobOpeningES = com.oneun.jobsservice.model.elastic.JobOpening.builder()
+                                    .id(jo)
+                                    .jobOpeningId(jo)
+                                    .jobTitle(jobHeader.get(ApplicationConstants.UNS_FIELD_JOB_TITLE_KEY).toString())
+                                    .unEntity(
+                                            jobHeader.get(ApplicationConstants.UNS_FIELD_DEPT_OFFICE_KEY).contains(ApplicationConstants.UNRWA) ? ApplicationConstants.UNRWA
+                                                    : jobHeader.get(ApplicationConstants.UNS_FIELD_DEPT_OFFICE_KEY).contains(ApplicationConstants.ICAO_DESCR) ? ApplicationConstants.ICAO
+                                                    : ApplicationConstants.UNS
+                                    )
+                                    .deadlineDate(jobHeader.get(ApplicationConstants.UNS_FIELD_DEADLINE_DATE_KEY).toString())
+                                    .postingUrl(ApplicationConstants.UNS_POSTING_LINK_URL_PREFIX + jobHeader.get(ApplicationConstants.UNS_FIELD_POSTING_URL_KEY))
+                                    .level(jobHeader.get(ApplicationConstants.UNS_FIELD_LEVEL_KEY))
+                                    .departmentOffice(jobHeader.get(ApplicationConstants.UNS_FIELD_DEPT_OFFICE_KEY))
+                                    .dutyStation(jobHeader.get(ApplicationConstants.UNS_FIELD_DUTY_STATION_KEY))
+                                    .jobFamily(jobHeader.get(ApplicationConstants.UNS_FIELD_JOB_FAMILY_KEY))
+                                    .jobNetwork(jobHeader.get(ApplicationConstants.UNS_FIELD_JOB_NETWORK_KEY))
+                                    .postedDate(jobHeader.get(ApplicationConstants.UNS_FIELD_POSTED_DATE_KEY))
+                                    .postingDescrRaw(getAdditionalAttributesFromPostingPage(ApplicationConstants.UNS_POSTING_LINK_URL_PREFIX + jobHeader.get(ApplicationConstants.UNS_FIELD_POSTING_URL_KEY)))
+                                    .addedDate(new Date())
+                                    .build();
+
+
+                            jobOpeningElasticSearchRepository.save(jobOpeningES);
+
+                        }
+
                     }
                 }
             }
@@ -140,6 +180,7 @@ public class JsoupUNSService {
             loadStatusRepository.save(loadStatus);
 
         }
+
 
     }
 

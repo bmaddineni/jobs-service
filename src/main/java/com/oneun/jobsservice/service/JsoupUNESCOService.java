@@ -4,6 +4,7 @@ import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.model.JobOpeningLoadStatus;
+import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.jsoup.nodes.Document;
@@ -28,6 +29,9 @@ public class JsoupUNESCOService {
 
     @Autowired
     private final JobOpeningLoadStatusRepository loadStatusRepository;
+
+    @Autowired
+    private JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository;
 
     public JsoupUNESCOService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository) {
         this.jobOpeningRepository = jobOpeningRepository;
@@ -57,7 +61,7 @@ public class JsoupUNESCOService {
 
             Document unescoDocPage = SSLHelper.getConnection(unescoUrlFirstPart + loop + unescoUrlSecondPart).get();
 
-            System.out.println(unescoUrlFirstPart + loop + unescoUrlSecondPart);
+//            System.out.println(unescoUrlFirstPart + loop + unescoUrlSecondPart);
 
             loop = loop + 25;
 //            System.out.println(loop+25);
@@ -103,6 +107,25 @@ public class JsoupUNESCOService {
 
                                 .build();
                         jobOpeningRepository.save(jobOpening);
+
+                    }
+
+                    if (jobOpeningElasticSearchRepository.findByJobOpeningId(unescoJobId).isEmpty()) {
+                        com.oneun.jobsservice.model.elastic.JobOpening jobOpeningES = com.oneun.jobsservice.model.elastic.JobOpening.builder()
+                                .id(unescoJobId)
+                                .jobOpeningId(unescoJobId)
+                                .unEntity(ApplicationConstants.UNESCO)
+                                .deadlineDate(unescoDeadlineDate)
+                                .dutyStation(unescoDutyStation)
+                                .jobFamily(unescoJobFacility)
+                                .jobTitle(unescoJobTitle)
+                                .postingUrl(unescoJobURL)
+                                .level(unescoGradeLevel)
+                                .addedDate(new Date())
+                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(unescoJobURL))
+
+                                .build();
+                        jobOpeningElasticSearchRepository.save(jobOpeningES);
 
                     }
                 }

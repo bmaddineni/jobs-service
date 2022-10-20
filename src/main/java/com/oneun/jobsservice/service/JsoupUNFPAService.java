@@ -1,9 +1,8 @@
 package com.oneun.jobsservice.service;
 
 import com.oneun.jobsservice.Constants.ApplicationConstants;
-import com.oneun.jobsservice.dto.UNHCRRequest;
 import com.oneun.jobsservice.model.JobOpening;
-import com.oneun.jobsservice.model.JobpostingStatus;
+import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.json.JSONArray;
@@ -33,9 +32,12 @@ public class JsoupUNFPAService {
     @Autowired
     private final JobOpeningLoadStatusRepository loadStatusRepository;
 
-    public JsoupUNFPAService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository) {
+    private JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository;
+
+    public JsoupUNFPAService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository, JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository) {
         this.jobOpeningRepository = jobOpeningRepository;
         this.loadStatusRepository = loadStatusRepository;
+        this.jobOpeningElasticSearchRepository = jobOpeningElasticSearchRepository;
     }
 
 
@@ -53,7 +55,7 @@ public class JsoupUNFPAService {
 
         int totalJobCount = Integer.parseInt(jsonObjectItem.get("TotalJobsCount").toString());
 
-        System.out.println(totalJobCount/24);
+//        System.out.println(totalJobCount/24);
 
         for (int i = 0; i < (totalJobCount / 24)+1; i++) {
 
@@ -61,7 +63,7 @@ public class JsoupUNFPAService {
             RestTemplate restTemplatePaged = new RestTemplate();
 
 
-            System.out.println(pagedUrl);
+//            System.out.println(pagedUrl);
             ResponseEntity<String> pagedResponse = restTemplatePaged.exchange(pagedUrl, HttpMethod.GET,HttpEntity.EMPTY,String.class);
 
 
@@ -81,7 +83,7 @@ public class JsoupUNFPAService {
                 String unfpaShortDescriptionAboutJob = requisition.getString("ShortDescriptionStr");
                 String unfpaJobPreviewURL = ApplicationConstants.UNFPARequisitionURL+id;
                 String unfpaRequisitionApiURL = ApplicationConstants.UNFPARequisitionApiURL+id;
-                System.out.println(unfpaRequisitionApiURL);
+//                System.out.println(unfpaRequisitionApiURL);
 
                 JSONObject unfpaJobRequisition = getJobAttributes(unfpaRequisitionApiURL);
                 JSONObject jobReqDetails = (JSONObject) unfpaJobRequisition.getJSONArray("items").get(0);
@@ -116,8 +118,27 @@ public class JsoupUNFPAService {
                                 .postingDescrRaw(jobDescr.replaceAll("<[^>]*>", ""))
                                 .addedDate(new Date())
                                 .build();
-                        System.out.println(jobOpening);
+//                        System.out.println(jobOpening);
                         jobOpeningRepository.save(jobOpening);
+
+
+                    }
+
+                    if (jobOpeningElasticSearchRepository.findByJobOpeningId(unfpaJobId).isEmpty()){
+                        com.oneun.jobsservice.model.elastic.JobOpening jobOpeningES = com.oneun.jobsservice.model.elastic.JobOpening.builder()
+                                .id(unfpaJobId)
+                                .jobOpeningId(unfpaJobId)
+                                .dutyStation(unfpaPrimaryLocation)
+                                .unEntity(ApplicationConstants.UNFPA)
+                                .jobTitle(unfpaJobTitle)
+                                .postingUrl(unfpaJobPreviewURL)
+                                .unicefJobDescrBasic(unfpaShortDescriptionAboutJob)
+                                .level(grade)
+                                .postingDescrRaw(jobDescr.replaceAll("<[^>]*>", ""))
+                                .addedDate(new Date())
+                                .build();
+//                        System.out.println(jobOpeningES);
+                        jobOpeningElasticSearchRepository.save(jobOpeningES);
 
 
                     }

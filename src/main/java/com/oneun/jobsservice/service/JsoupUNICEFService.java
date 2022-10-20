@@ -4,6 +4,7 @@ import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.model.JobOpeningLoadStatus;
+import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.jsoup.nodes.Document;
@@ -29,6 +30,15 @@ public class JsoupUNICEFService {
 
     @Autowired
     private JobOpeningLoadStatusRepository loadStatusRepository;
+
+    @Autowired
+    private JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository;
+
+    public JsoupUNICEFService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository, JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository) {
+        this.jobOpeningRepository = jobOpeningRepository;
+        this.loadStatusRepository = loadStatusRepository;
+        this.jobOpeningElasticSearchRepository = jobOpeningElasticSearchRepository;
+    }
 
     public void parseUNICEFCareers() throws IOException,StringIndexOutOfBoundsException,  SocketException  {
 
@@ -56,7 +66,7 @@ public class JsoupUNICEFService {
                         .toArray()[1].toString()
                     .split("/"))
                         .toArray()[0].toString();
-            String unicefJobPostingURL=ApplicationConstants.UNICEF_POSTING_LINK_URL_PREFIX+unicefJobId;
+            String unicefJobPostingURL=ApplicationConstants.UNICEF_POSTING_LINK_URL_PREFIX+unicefJobPostingURLFull;
             String unicefPostingTitle = tableElements.getElementsByAttribute("href").get(0).text();
 
 
@@ -83,6 +93,25 @@ public class JsoupUNICEFService {
 
                 jobOpeningRepository.save(jobOpening);
             }
+
+                if(unicefJobId != null && jobOpeningElasticSearchRepository.findByJobOpeningId(unicefJobId).isEmpty()) {
+                    com.oneun.jobsservice.model.elastic.JobOpening jobOpeningES = com.oneun.jobsservice.model.elastic.JobOpening.builder()
+                            .id(unicefJobId)
+                            .jobOpeningId(unicefJobId)
+                            .postingUrl(unicefJobPostingURL)
+                            .dutyStation(unicefDutyStation)
+                            .deadlineDate(unicefDeadlineDate)
+                            .jobTitle(unicefPostingTitle)
+                            .addedDate(new Date())
+                            .unEntity(ApplicationConstants.UNICEF)
+                            .unicefJobDescrBasic(unicefBasicJobDescription)
+                            .postingDescrRaw(getAdditionalAttributesFromPostingPage(unicefJobPostingURL))
+                            .build();
+                    counter++;
+
+                    jobOpeningElasticSearchRepository.save(jobOpeningES);
+                }
+
             }
 
 

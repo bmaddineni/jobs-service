@@ -4,6 +4,7 @@ import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.model.JobOpeningLoadStatus;
+import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.jsoup.nodes.Document;
@@ -31,6 +32,8 @@ public class JsoupWFPService {
     @Autowired
     private JobOpeningLoadStatusRepository loadStatusRepository;
 
+    @Autowired
+    private JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository;
     public void parseWFPCareers() throws IOException, SocketException  {
         Date startDate = new Date();
 
@@ -80,12 +83,36 @@ public class JsoupWFPService {
                             .postingUrl(wfpPostingUrl)
                             .wfpTypeOfContract(wfpTypeOfContract)
                             .addedDate(new Date())
-                            .unicefJobDescrBasic(getAdditionalAttributesFromPostingPage(wfpPostingUrl))
+//                            .unicefJobDescrBasic(getAdditionalAttributesFromPostingPage(wfpPostingUrl))
+                            .postingDescrRaw(getAdditionalAttributesFromPostingPage(wfpPostingUrl))
 
                             .build();
                     jobOpeningRepository.save(jobOpening);
 
                 }
+
+                if (jobOpeningElasticSearchRepository.findByJobOpeningId(wfpJoId).isEmpty()) {
+                    counter++;
+                    com.oneun.jobsservice.model.elastic.JobOpening jobOpeningES = com.oneun.jobsservice.model.elastic.JobOpening.builder()
+
+                            .id(wfpJoId).jobOpeningId(wfpJoId)
+                            .unEntity(ApplicationConstants.WFP)
+                            .deadlineDate(wfpClosingDate)
+                            .dutyStation(wfpCountry)
+                            .jobFamily(wfpAreaOfExpertise)
+                            .jobTitle(wfpJobTitle)
+                            .postingUrl(wfpPostingUrl)
+                            .wfpTypeOfContract(wfpTypeOfContract)
+                            .addedDate(new Date())
+//                            .unicefJobDescrBasic(getAdditionalAttributesFromPostingPage(wfpPostingUrl))
+                            .postingDescrRaw(getAdditionalAttributesFromPostingPage(wfpPostingUrl))
+
+
+                            .build();
+                    jobOpeningElasticSearchRepository.save(jobOpeningES);
+
+                }
+
 
             }
 

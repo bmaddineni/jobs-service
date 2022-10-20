@@ -1,5 +1,6 @@
 package com.oneun.jobsservice.service;
 
+import com.oneun.jobsservice.dto.JobOpeningsByEntity;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +46,20 @@ public class JobOpeningService {
     public Page<JobOpening> findAllWithPagination(int page, int size)
     {
         return jobOpeningRepository.findAll(PageRequest.of(page,size));
+    }
+
+    public List<JobOpeningsByEntity> findJobsCountByEntity() {
+
+        return jobOpeningRepository.countTotalJobsByEntity();
+    }
+
+    public void deleteByEntity(String entity) {
+
+      Page<JobOpening> jobs = findByUnEntity(entity,1,400);
+
+        System.out.println(jobs.getContent());
+
+     jobOpeningRepository.deleteAllInBatch(jobs);
+
     }
 }

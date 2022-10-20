@@ -5,3 +5,12 @@ spring:
   h2:
     console:
       enabled: true
+  data:
+    elasicsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: localhost:9300
+
+
+LINKEDIN_PROFILE_END_POINT: https://api.linkedin.com/v2/me
+
+LINKEDIN_POST_END_POINT: https://api.linkedin.com/v2/ugcPosts

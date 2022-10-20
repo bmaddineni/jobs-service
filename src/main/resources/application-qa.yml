@@ -14,8 +14,12 @@ spring:
     username: unjobs
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-
+#  data:
+#    elasicsearch:
+#      cluster-name: 704477490845:unjobs
+#      cluster-nodes: https://search-unjobs-whenkya5bzpav7tif3ejrzvk5y.us-east-1.es.amazonaws.com
+#      username: admin
+#      password: Moa@8055
 
 
 

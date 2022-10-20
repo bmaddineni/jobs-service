@@ -4,6 +4,7 @@ import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.dto.UNHCRRequest;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.model.JobpostingStatus;
+import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.json.JSONArray;
@@ -30,9 +31,13 @@ public class JsoupIMFService {
     @Autowired
     private final JobOpeningLoadStatusRepository loadStatusRepository;
 
-    public JsoupIMFService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository) {
+    @Autowired
+    private JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository;
+
+    public JsoupIMFService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository, JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository) {
         this.jobOpeningRepository = jobOpeningRepository;
         this.loadStatusRepository = loadStatusRepository;
+        this.jobOpeningElasticSearchRepository = jobOpeningElasticSearchRepository;
     }
 
 
@@ -49,7 +54,7 @@ public class JsoupIMFService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         HttpEntity<UNHCRRequest> request = new HttpEntity<>(new UNHCRRequest(""));
-        System.out.println(request);
+//        System.out.println(request);
         ResponseEntity<String> response = restTemplate.exchange(imfEndpointURL, HttpMethod.POST,request,String.class);
 
         JSONObject jsonObject = new JSONObject(response.getBody().toString());
@@ -58,9 +63,9 @@ public class JsoupIMFService {
 
         JSONArray jsonArray = new JSONArray(jsonObject.get("jobPostings").toString());
 
-        for (int i = 0; i < total; i++) {
+        for (int i = 0; i < jsonArray.length(); i++) {
 
-            System.out.println(jsonArray.getJSONObject(i));
+//            System.out.println(jsonArray.getJSONObject(i));
             String externalPath = jsonArray.getJSONObject(i).getString("externalPath");
             JSONArray bulletedFields = jsonArray.getJSONObject(i).getJSONArray("bulletFields");
 
@@ -121,6 +126,26 @@ public class JsoupIMFService {
                 jobOpeningRepository.save(jobOpening);
 
             }
+
+                if ( jobOpeningElasticSearchRepository.findByJobOpeningId(jobId).isEmpty()) {
+
+                    com.oneun.jobsservice.model.elastic.JobOpening jobOpeningES = com.oneun.jobsservice.model.elastic.JobOpening.builder()
+                            .id(jobId)
+                            .jobOpeningId(jobId)
+                            .level(null)
+                            .jobTitle(title)
+                            .postingUrl(url)
+                            .deadlineDate(deadLine)
+                            .dutyStation(dutyStation)
+                            .postingDescrRaw(jobPostingDescr)
+                            .addedDate(new Date())
+                            .unEntity(ApplicationConstants.IMF)
+                            .jobpostingStatus(JobpostingStatus.ACTIVE)
+
+                            .build();
+
+                    jobOpeningElasticSearchRepository.save(jobOpeningES);
+                }
             }
 
         }

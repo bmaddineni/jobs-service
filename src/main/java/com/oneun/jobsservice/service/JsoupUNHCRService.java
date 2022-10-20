@@ -4,6 +4,7 @@ import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.dto.UNHCRRequest;
 import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
+import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.json.JSONArray;
@@ -31,6 +32,9 @@ public class JsoupUNHCRService {
     @Autowired
     private final JobOpeningLoadStatusRepository loadStatusRepository;
 
+    @Autowired
+    private JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository;
+
     public JsoupUNHCRService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository) {
         this.jobOpeningRepository = jobOpeningRepository;
         this.loadStatusRepository = loadStatusRepository;
@@ -50,7 +54,7 @@ public class JsoupUNHCRService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         HttpEntity<UNHCRRequest> request = new HttpEntity<>(new UNHCRRequest(""));
-        System.out.println(request);
+//        System.out.println(request);
         ResponseEntity<String> response = restTemplate.exchange(unhcrEndpointURL, HttpMethod.POST,request,String.class);
 
         JSONObject jsonObject = new JSONObject(response.getBody().toString());
@@ -59,9 +63,11 @@ public class JsoupUNHCRService {
 
         JSONArray jsonArray = new JSONArray(jsonObject.get("jobPostings").toString());
 
-        for (int i = 0; i < total; i++) {
+//        System.out.println("total : " + total +" arraySize : "+ jsonArray.length());
 
-            System.out.println(jsonArray.getJSONObject(i));
+        for (int i = 0; i < jsonArray.length(); i++) {
+
+//            System.out.println(jsonArray.getJSONObject(i));
             String externalPath = jsonArray.getJSONObject(i).getString("externalPath");
             JSONArray bulletedFields = jsonArray.getJSONObject(i).getJSONArray("bulletFields");
 
@@ -118,6 +124,23 @@ public class JsoupUNHCRService {
                             .build();
 
                     jobOpeningRepository.save(jobOpening);
+                }
+
+                if (jobOpeningElasticSearchRepository.findByJobOpeningId(jobId).isEmpty()) {
+
+                    com.oneun.jobsservice.model.elastic.JobOpening jobOpeningES = com.oneun.jobsservice.model.elastic.JobOpening.builder()
+                            .id(jobId)
+                            .jobOpeningId(jobId)
+                            .level(level)
+                            .jobTitle(title)
+                            .postingUrl(url)
+                            .dutyStation(dutyStation)
+                            .postingDescrRaw(jobPostingDescr)
+                            .addedDate(new Date())
+                            .unEntity(ApplicationConstants.UNHCR)
+                            .build();
+
+                    jobOpeningElasticSearchRepository.save(jobOpeningES);
                 }
             }
 

@@ -1,6 +1,9 @@
 package com.oneun.jobsservice;
 
+import com.oneun.jobsservice.helper.LinkedInApi;
+import com.oneun.jobsservice.helper.TwitterApi;
 import com.oneun.jobsservice.service.*;
+import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +13,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 @SpringBootApplication
 @EnableScheduling
 public class JobsServiceApplication {
 
-	public JobsServiceApplication(JsoupILOService jsoupILOService, JsoupIMFService jsoupIMFService,JsoupUNHCRService jsoupUNHCRService, JsoupUNSService jsoupUNSService, JsoupUNDPService jsoupUNDPService, JsoupWFPService jsoupWFPService, JsoupUNICEFService jsoupUNICEFService, JsoupUNESCOService jsoupUNESCOService) {
+	public JobsServiceApplication(JsoupILOService jsoupILOService, JsoupIMFService jsoupIMFService, JsoupUNHCRService jsoupUNHCRService, JsoupUNSService jsoupUNSService, JsoupUNDPService jsoupUNDPService, JsoupWFPService jsoupWFPService, JsoupUNICEFService jsoupUNICEFService, JsoupUNESCOService jsoupUNESCOService, JsoupUNFPAService jsoupUNFPAService, LinkedInApi linkedInApi, TwitterApi twitterApi) {
 		this.jsoupIMFService = jsoupIMFService;
 		this.jsoupUNHCRService = jsoupUNHCRService;
 		this.jsoupUNSService = jsoupUNSService;
@@ -23,6 +29,9 @@ public class JobsServiceApplication {
 		this.jsoupUNICEFService = jsoupUNICEFService;
 		this.jsoupUNESCOService = jsoupUNESCOService;
 		this.jsoupILOService = jsoupILOService;
+		this.jsoupUNFPAService = jsoupUNFPAService;
+		this.linkedInApi = linkedInApi;
+		this.twitterApi = twitterApi;
 	}
 
 	public static void main(String[] args) {
@@ -55,11 +64,24 @@ public class JobsServiceApplication {
 	@Autowired
 	private JsoupUNFPAService jsoupUNFPAService;
 
+	@Autowired
+	private LinkedInApi linkedInApi;
+
+	@Autowired
+	private TwitterApi twitterApi;
+
 
 	@Bean
 	CommandLineRunner init(){
 		return args -> {
 			logger.info("Config class has been initialized during start up!");
+
+//			System.out.println(linkedInApi.submitLinkedInPost(new Date().toString()+": Hello From United Nations Jobs! "));
+
+			Date dateStarted = new Date();
+
+			logger.info("process started at : " + dateStarted);
+
 
 			logger.info("UNFPA loading started");
 			jsoupUNFPAService.parseUNFPACareers();
@@ -74,23 +96,48 @@ public class JobsServiceApplication {
 //			jsoupUNHCRService.testUNDPHCMAPI();
 			jsoupUNHCRService.parseUNHCRCareers();
 
+			logger.info("UNS Parsing started! ");
+
 			jsoupUNSService.parseUNCareers();
 			logger.info("UNS Parsing completed during application start up! ");
+
+			logger.info("UNDP Parsing started! ");
 
 			jsoupUNDPService.parseUNDPCareers();
 			logger.info("UNDP Parsing completed during application start up! ");
 
+			logger.info("WFP Parsing started! ");
+
 			jsoupWFPService.parseWFPCareers();
 			logger.info("WFP Parsing completed during application start up! ");
 
+			logger.info("UNICEF Parsing started! ");
 
 			jsoupUNICEFService.parseUNICEFCareers();
 			logger.info("UNICEF Parsing completed during application start up! ");
 
-
+			logger.info("UNESCO Parsing started! ");
 			jsoupUNESCOService.parseUNESCOCareers();
 			logger.info("UNESCO Parsing completed during schedule!");
 
+
+			Date dateEnded = new Date();
+
+
+			long diffInMillies = Math.abs(dateStarted.getTime() - dateEnded.getTime());
+			long diffHours = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+			long diffMinutes = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+			long diffSeconds = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+
+			logger.info("process started at : " + dateStarted);
+			logger.info("process ended at: " + dateEnded);
+
+			logger.info("It took both elastic and mysql load (hours) :" + diffHours );
+			logger.info("It took both elastic and mysql load (minutes) :" + diffMinutes );
+
+			logger.info("It took both elastic and mysql load (seconds) :" + diffSeconds );
 
 
 

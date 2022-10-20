@@ -4,8 +4,12 @@ import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.model.JobOpeningLoadStatus;
+import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -32,20 +36,16 @@ public class JsoupUNDPService {
     @Autowired
     private final JobOpeningLoadStatusRepository loadStatusRepository;
 
-    public JsoupUNDPService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository) {
+    @Autowired
+    private JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository;
+
+    public JsoupUNDPService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository, JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository) {
         this.jobOpeningRepository = jobOpeningRepository;
         this.loadStatusRepository = loadStatusRepository;
+        this.jobOpeningElasticSearchRepository = jobOpeningElasticSearchRepository;
     }
 
-    //            * "0 0 * * * *" = the top of every hour of every day.
-//            * "*/10 * * * * *" = every ten seconds.
-//            * "0 0 8-10 * * *" = 8, 9 and 10 o'clock of every day.
-//            * "0 0 0,6,12,18 * * *" = 12 am, 6 am, 12 pm and 6 pm of every day.
-//            * "0 0/30 8-10 * * *" = 8:00, 8:30, 9:00, 9:30 and 10 o'clock every day.
-//            * "0 0 9-17 * * MON-FRI" = on the hour nine-to-five weekdays
-//            * "0 0 0 25 12 ?" = every Christmas Day at midnight
-//    @Scheduled(cron = "0 0/1 * * * *")
-    public void parseUNDPCareers() throws IOException , SocketException  {
+    public void parseUNDPCareers() throws IOException, SocketException, JSONException {
 
         Date startDate = new Date();
 
@@ -155,6 +155,26 @@ public class JsoupUNDPService {
                         jobOpeningRepository.save(jobOpening);
 
                     }
+
+                        if (jobOpeningElasticSearchRepository.findByJobOpeningId(undpJobId).isEmpty()) {
+
+
+                            com.oneun.jobsservice.model.elastic.JobOpening jobOpeningES = com.oneun.jobsservice.model.elastic.JobOpening.builder()
+                                    .id(undpJobId)
+                                    .jobOpeningId(undpJobId)
+                                    .unEntity(ApplicationConstants.UNDP)
+                                    .level(undpjobLevel)
+                                    .postingUrl(postingURL)
+                                    .deadlineDate(undpDeadline)
+                                    .dutyStation(undpDutyStation)
+                                    .jobTitle(postingTitle.trim())
+                                    .postingDescrRaw(getAdditionalAttributesFromPostingPage(postingURL, undpJobIdWithoutPrefix))
+                                    .addedDate(new Date())
+                                    .build();
+                            jobOpeningElasticSearchRepository.save(jobOpeningES);
+
+                        }
+
                     }
 
                 }
@@ -178,13 +198,13 @@ public class JsoupUNDPService {
 
     }
 
-    private String getAdditionalAttributesFromPostingPage(String url, String undpJobId) throws IOException , SocketException {
+    private String getAdditionalAttributesFromPostingPage(String url, String undpJobId) throws IOException, SocketException, JSONException {
         Document postingPageDoc = SSLHelper.getConnection(url).get();
 
 
         if (url.contains(ApplicationConstants.UNDP_ORACLE_HCM_IDENTIFIER)) {
 
-            String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API + undpJobId ;
+            String apiUrl = ApplicationConstants.UNDP_ORACLE_HCM_JOB_DESCR_API + undpJobId +",siteNumber=CX_1";
 
             RestTemplate restTemplate = new RestTemplate();
 
@@ -194,8 +214,20 @@ public class JsoupUNDPService {
 
             ResponseEntity<String> result = restTemplate.exchange(apiUrl, HttpMethod.GET, HttpEntity.EMPTY, String.class);
 
+            JSONArray items = new JSONObject(result.getBody()).getJSONArray("items");
 
-            return result.toString();
+            String undpOracleJobDescr = null;
+            if (items.length()>1) {
+
+                undpOracleJobDescr = ((JSONObject)items.get(0)).getString("ExternalDescriptionStr");
+            }
+//            System.out.println(apiUrl);
+//            System.out.println(undpOracleJobDescr);
+
+//            .getJSONArray("items").getJSONObject(0);
+
+
+            return undpOracleJobDescr;
         } else if (url.contains(ApplicationConstants.UNDP_PARTNER_AGENCIES_URL_IDENTIFIER)) {
 
             return postingPageDoc.select("#win0divPSPAGECONTAINER").text();

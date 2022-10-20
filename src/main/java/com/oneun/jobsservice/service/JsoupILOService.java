@@ -4,6 +4,7 @@ import com.oneun.jobsservice.Constants.ApplicationConstants;
 import com.oneun.jobsservice.helper.SSLHelper;
 import com.oneun.jobsservice.model.JobOpening;
 import com.oneun.jobsservice.model.JobOpeningLoadStatus;
+import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
 import org.jsoup.nodes.Document;
@@ -29,9 +30,12 @@ public class JsoupILOService {
     @Autowired
     private final JobOpeningLoadStatusRepository loadStatusRepository;
 
-    public JsoupILOService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository) {
+    private JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository;
+
+    public JsoupILOService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository, JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository) {
         this.jobOpeningRepository = jobOpeningRepository;
         this.loadStatusRepository = loadStatusRepository;
+        this.jobOpeningElasticSearchRepository = jobOpeningElasticSearchRepository;
     }
 
     public void parseILOCareers() throws IOException, SocketException  {
@@ -57,7 +61,7 @@ public class JsoupILOService {
 
             Document unescoDocPage = SSLHelper.getConnection(unescoUrlFirstPart + loop + unescoUrlSecondPart).get();
 
-            System.out.println(unescoUrlFirstPart + loop + unescoUrlSecondPart);
+//            System.out.println(unescoUrlFirstPart + loop + unescoUrlSecondPart);
 
             loop = loop + 20;
 //            System.out.println(loop+25);
@@ -101,6 +105,23 @@ public class JsoupILOService {
 
                                 .build();
                         jobOpeningRepository.save(jobOpening);
+                    }
+                    if (jobOpeningElasticSearchRepository.findByJobOpeningId(iloJobId).isEmpty()) {
+                        com.oneun.jobsservice.model.elastic.JobOpening jobOpeningEs = com.oneun.jobsservice.model.elastic.JobOpening.builder()
+                                .id(iloJobId)
+                                .jobOpeningId(iloJobId)
+                                .unEntity(ApplicationConstants.ILO)
+//                                .deadlineDate(unescoDeadlineDate)
+                                .dutyStation(iloDutyStation)
+                                .jobFamily(iloJobFacility)
+                                .jobTitle(iloJobTitle)
+                                .postingUrl(iloJobURL)
+//                                .level(unescoGradeLevel)
+                                .addedDate(new Date())
+                                .postingDescrRaw(getAdditionalAttributesFromPostingPage(iloJobURL))
+
+                                .build();
+                        jobOpeningElasticSearchRepository.save(jobOpeningEs);
 
                     }
                 }
