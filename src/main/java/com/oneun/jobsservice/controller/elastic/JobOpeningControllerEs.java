@@ -33,11 +33,19 @@ public class JobOpeningControllerEs {
     }
 
     @GetMapping("/findByEntity/{entity}")
-    public List<JobOpening> findByFirstName(@PathVariable String entity){
+    public List<JobOpening> findByEntity(@PathVariable String entity){
 
         return jobOpeningElasticSearchRepository.findByUnEntity(entity);
     }
 
+    @PostMapping("/delete/entity/{entity}")
+    public void deleteJobsByEntity(@PathVariable String entity){
+
+        jobOpeningElasticSearchRepository.deleteAll(jobOpeningElasticSearchRepository.findByUnEntity(entity));
+
+
+
+    }
 
 
 }

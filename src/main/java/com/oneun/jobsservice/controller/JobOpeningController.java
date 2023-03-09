@@ -118,7 +118,7 @@ public class JobOpeningController {
     }
 
     @PostMapping("/delete/entity/{entity}")
-    public void deleteJobsByEntity(String entity){
+    public void deleteJobsByEntity(@PathVariable String entity){
 
         jobOpeningService.deleteByEntity(entity);
 

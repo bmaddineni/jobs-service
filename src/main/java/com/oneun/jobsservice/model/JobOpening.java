@@ -24,6 +24,8 @@ public class JobOpening {
 //    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
 @Column(columnDefinition = "TEXT")
     private String jobTitle;
+    @Column(columnDefinition = "TEXT")
+
     private String dutyStation;
     private String jobFamily;
     private String jobNetwork;

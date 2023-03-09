@@ -43,6 +43,9 @@ public class ApplicationConstants {
     public static final String UNICEF_Careers_URL = "https://jobs.unicef.org/en-us/listing/?page=1&page-items=1000";
     public static final String UNICEF = "UNICEF";
     public static final String UNICEF_POSTING_LINK_URL_PREFIX = "https://jobs.unicef.org";
+
+    public static final String UNICEF_POSTING_LINK_URL_PREFIX_FOR_JOB_ID = "https://jobs.unicef.org/en-us/job/";
+
     public static final String UNDP_PARTNER_AGENCIES_URL_IDENTIFIER = "partner";
 
     public static final String ILO_Careers_URL = "https://jobs.ilo.org/go/All-Jobs/2842101/?q=&sortColumn=referencedate&sortDirection=desc";

@@ -7,6 +7,7 @@ import com.oneun.jobsservice.model.JobOpeningLoadStatus;
 import com.oneun.jobsservice.repository.JobOpeningElasticSearchRepository;
 import com.oneun.jobsservice.repository.JobOpeningLoadStatusRepository;
 import com.oneun.jobsservice.repository.JobOpeningRepository;
+import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -40,7 +41,7 @@ public class JsoupUNICEFService {
         this.jobOpeningElasticSearchRepository = jobOpeningElasticSearchRepository;
     }
 
-    public void parseUNICEFCareers() throws IOException,StringIndexOutOfBoundsException,  SocketException  {
+    public void parseUNICEFCareers() throws IOException,StringIndexOutOfBoundsException, HttpStatusException, SocketException  {
 
         int counter = 0;
         Date startDate = new Date();
@@ -68,8 +69,9 @@ public class JsoupUNICEFService {
                         .toArray()[0].toString();
             String unicefJobPostingURL=ApplicationConstants.UNICEF_POSTING_LINK_URL_PREFIX+unicefJobPostingURLFull;
             String unicefPostingTitle = tableElements.getElementsByAttribute("href").get(0).text();
-
-
+//            System.out.println(unicefJobPostingURL);
+//            System.out.println(ApplicationConstants.UNICEF_POSTING_LINK_URL_PREFIX_FOR_JOB_ID+unicefJobId);
+String postingDescr = getAdditionalAttributesFromPostingPage(unicefJobPostingURL);
             String unicefDeadlineDate = tableElements.getElementsByTag("p").get(3).text().replace("Deadline: ","");
             String unicefDutyStation = tableElements.getElementsByClass("location").get(0).text();
             String unicefBasicJobDescription = tableElements.getElementsByTag("p").get(1).text();
@@ -87,7 +89,7 @@ public class JsoupUNICEFService {
                         .addedDate(new Date())
                         .unEntity(ApplicationConstants.UNICEF)
                         .unicefJobDescrBasic(unicefBasicJobDescription)
-                        .postingDescrRaw(getAdditionalAttributesFromPostingPage(unicefJobPostingURL))
+                        .postingDescrRaw(postingDescr)
                         .build();
                 counter++;
 
@@ -105,7 +107,7 @@ public class JsoupUNICEFService {
                             .addedDate(new Date())
                             .unEntity(ApplicationConstants.UNICEF)
                             .unicefJobDescrBasic(unicefBasicJobDescription)
-                            .postingDescrRaw(getAdditionalAttributesFromPostingPage(unicefJobPostingURL))
+                            .postingDescrRaw(postingDescr)
                             .build();
                     counter++;
 
@@ -136,9 +138,16 @@ public class JsoupUNICEFService {
     }
 
    private String getAdditionalAttributesFromPostingPage(String url) throws IOException, SocketException {
-        Document postingPageDoc = SSLHelper.getConnection(url).get();
 
-        return postingPageDoc.select("#job-content").text();
+        String data= null;
+//       System.out.println(url);
+
+            Document postingPageDoc = SSLHelper.getConnection(url).timeout(30*1000).ignoreHttpErrors(true).get();
+
+            data =postingPageDoc.select("#job-content").text();
+
+
+       return data;
 
     }
 

@@ -55,9 +55,9 @@ public class JobOpeningService {
 
     public void deleteByEntity(String entity) {
 
-      Page<JobOpening> jobs = findByUnEntity(entity,1,400);
-
-        System.out.println(jobs.getContent());
+      List<JobOpening> jobs = jobOpeningRepository.findByUnEntity(entity);
+        System.out.println(entity);
+        System.out.println(jobs.size());
 
      jobOpeningRepository.deleteAllInBatch(jobs);
 

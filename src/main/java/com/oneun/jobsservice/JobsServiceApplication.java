@@ -20,19 +20,6 @@ import java.util.concurrent.TimeUnit;
 @EnableScheduling
 public class JobsServiceApplication {
 
-	public JobsServiceApplication(JsoupILOService jsoupILOService, JsoupIMFService jsoupIMFService, JsoupUNHCRService jsoupUNHCRService, JsoupUNSService jsoupUNSService, JsoupUNDPService jsoupUNDPService, JsoupWFPService jsoupWFPService, JsoupUNICEFService jsoupUNICEFService, JsoupUNESCOService jsoupUNESCOService, JsoupUNFPAService jsoupUNFPAService, LinkedInApi linkedInApi, TwitterApi twitterApi) {
-		this.jsoupIMFService = jsoupIMFService;
-		this.jsoupUNHCRService = jsoupUNHCRService;
-		this.jsoupUNSService = jsoupUNSService;
-		this.jsoupUNDPService = jsoupUNDPService;
-		this.jsoupWFPService = jsoupWFPService;
-		this.jsoupUNICEFService = jsoupUNICEFService;
-		this.jsoupUNESCOService = jsoupUNESCOService;
-		this.jsoupILOService = jsoupILOService;
-		this.jsoupUNFPAService = jsoupUNFPAService;
-		this.linkedInApi = linkedInApi;
-		this.twitterApi = twitterApi;
-	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(JobsServiceApplication.class, args);
@@ -58,8 +45,8 @@ public class JobsServiceApplication {
 	@Autowired
 	private JsoupUNESCOService jsoupUNESCOService;
 
-	@Autowired
-	private JsoupILOService jsoupILOService;
+//	@Autowired
+//	private JsoupILOService jsoupILOService;
 
 	@Autowired
 	private JsoupUNFPAService jsoupUNFPAService;
@@ -80,21 +67,6 @@ public class JobsServiceApplication {
 
 			Date dateStarted = new Date();
 
-			logger.info("process started at : " + dateStarted);
-
-
-			logger.info("UNFPA loading started");
-			jsoupUNFPAService.parseUNFPACareers();
-
-			logger.info("ILO loading started");
-			jsoupILOService.parseILOCareers();
-
-			logger.info("IMF loading started");
-			jsoupIMFService.parseIMFCareers();
-
-			logger.info("UNHCR loading started");
-//			jsoupUNHCRService.testUNDPHCMAPI();
-			jsoupUNHCRService.parseUNHCRCareers();
 
 			logger.info("UNS Parsing started! ");
 
@@ -111,14 +83,33 @@ public class JobsServiceApplication {
 			jsoupWFPService.parseWFPCareers();
 			logger.info("WFP Parsing completed during application start up! ");
 
+
+			logger.info("UNESCO Parsing started! ");
+			jsoupUNESCOService.parseUNESCOCareers();
+			logger.info("UNESCO Parsing completed during schedule!");
+
+
+			logger.info("UNHCR loading started");
+//			jsoupUNHCRService.testUNDPHCMAPI();
+			jsoupUNHCRService.parseUNHCRCareers();
+
+			logger.info("process started at : " + dateStarted);
 			logger.info("UNICEF Parsing started! ");
 
 			jsoupUNICEFService.parseUNICEFCareers();
 			logger.info("UNICEF Parsing completed during application start up! ");
 
-			logger.info("UNESCO Parsing started! ");
-			jsoupUNESCOService.parseUNESCOCareers();
-			logger.info("UNESCO Parsing completed during schedule!");
+
+			logger.info("UNFPA loading started");
+			jsoupUNFPAService.parseUNFPACareers();
+
+			logger.info("ILO loading started");
+//			jsoupILOService.parseILOCareers();
+
+			logger.info("IMF loading started");
+			jsoupIMFService.parseIMFCareers();
+
+
 
 
 			Date dateEnded = new Date();
