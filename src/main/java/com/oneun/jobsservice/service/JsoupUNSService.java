@@ -53,7 +53,7 @@ public class JsoupUNSService {
         Date startDate = new Date();
 
         int counter = 0;
-        Document unsDoc = SSLHelper.getConnection(ApplicationConstants.UNS_Careers_URL).get();
+        Document unsDoc = SSLHelper.getConnection(ApplicationConstants.UNS1_Careers_URL).get();
         HashMap<String,HashMap<String,String>> hashMap = new HashMap<>();
 
         //fetches all table rows

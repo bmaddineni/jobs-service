@@ -2,6 +2,8 @@ package com.oneun.jobsservice.Constants;
 
 public class ApplicationConstants {
 
+    public static final String UNS1_Careers_URL = "https://careers.un.org/api/public/opening/jo/list/filteredV2/en";
+
     public static final String UNS_Careers_URL = "https://careers.un.org/lbw/JobFeed.aspx?lang=en-US";
     public static final String UNDP_Careers_URL = "https://jobs.undp.org/cj_view_jobs.cfm";
 
@@ -65,6 +67,8 @@ public class ApplicationConstants {
 
     public static final String UNHCR = "UNHCR";
     public static final String IMF = "IMF";
+    public static final String GE = "GE";
+
     public static final String ILO = "ILO";
 
     public static final String UNFPAJobsEndpointURL = "https://estm.fa.em2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions?onlyData=true&expand=requisitionList.secondaryLocations,flexFieldsFacet.values&finder=findReqs;siteNumber=CX_2003,limit=24";

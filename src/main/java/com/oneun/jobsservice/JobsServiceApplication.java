@@ -29,6 +29,8 @@ public class JobsServiceApplication {
 
 	@Autowired
 	private JsoupIMFService jsoupIMFService;
+	@Autowired
+	private JsoupGEService jsoupGEService;
 
 	@Autowired
 	private JsoupUNHCRService jsoupUNHCRService;
@@ -67,16 +69,21 @@ public class JobsServiceApplication {
 
 			Date dateStarted = new Date();
 
+			logger.info("GE loading started");
+			jsoupGEService.parseCareers();
+
+
 
 			logger.info("UNS Parsing started! ");
 
 			jsoupUNSService.parseUNCareers();
 			logger.info("UNS Parsing completed during application start up! ");
 
-			logger.info("UNDP Parsing started! ");
 
-			jsoupUNDPService.parseUNDPCareers();
-			logger.info("UNDP Parsing completed during application start up! ");
+			logger.info("IMF loading started");
+			jsoupIMFService.parseIMFCareers();
+
+
 
 			logger.info("WFP Parsing started! ");
 
@@ -106,10 +113,13 @@ public class JobsServiceApplication {
 			logger.info("ILO loading started");
 //			jsoupILOService.parseILOCareers();
 
-			logger.info("IMF loading started");
-			jsoupIMFService.parseIMFCareers();
 
 
+
+			logger.info("UNDP Parsing started! ");
+
+			jsoupUNDPService.parseUNDPCareers();
+			logger.info("UNDP Parsing completed during application start up! ");
 
 
 			Date dateEnded = new Date();

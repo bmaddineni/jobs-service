@@ -47,7 +47,7 @@ private String unicefJobDescrBasic;
 
 //    @Column(columnDefinition = "CHARACTER LARGE OBJECT")
     @JsonIgnore
-@Column(columnDefinition = "TEXT")
+@Column(columnDefinition = "LONGTEXT")
     private String postingDescrRaw;
 
     private Date addedDate;

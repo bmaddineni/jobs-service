@@ -1,0 +1,20 @@
+server:
+  port: 8081
+
+spring:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  datasource:
+    url: jdbc:mysql://unjobsearch.c0nefjzuqzsm.us-east-1.rds.amazonaws.com:3306/unjobs
+    username: root
+    password: password
+
+
+
+
+

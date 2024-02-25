@@ -22,9 +22,9 @@ import java.net.SocketException;
 import java.util.Date;
 
 @Service
-public class JsoupIMFService {
+public class JsoupGEService {
 
-    Logger logger = LoggerFactory.getLogger(JsoupIMFService.class);
+    Logger logger = LoggerFactory.getLogger(JsoupGEService.class);
     @Autowired
     private final JobOpeningRepository jobOpeningRepository;
 
@@ -36,20 +36,22 @@ public class JsoupIMFService {
 
     @Autowired
     private RestTemplate restTemplate;
-    public JsoupIMFService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository, JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository) {
+    public JsoupGEService(JobOpeningRepository jobOpeningRepository, JobOpeningLoadStatusRepository loadStatusRepository, JobOpeningElasticSearchRepository jobOpeningElasticSearchRepository) {
         this.jobOpeningRepository = jobOpeningRepository;
         this.loadStatusRepository = loadStatusRepository;
         this.jobOpeningElasticSearchRepository = jobOpeningElasticSearchRepository;
     }
 
 
-    public void parseIMFCareers() throws IOException, SocketException, JSONException {
+    public void parseCareers() throws IOException, SocketException, JSONException {
 
-        String imfEndpointURL = "https://imf.wd5.myworkdayjobs.com/wday/cxs/imf/IMF/jobs";
+        String imfEndpointURL = "https://ge.wd5.myworkdayjobs.com/wday/cxs/ge/GE_ExternalSite/jobs";
+//        https://ge.wd5.myworkdayjobs.com/wday/cxs/ge/GE_ExternalSite/jobs
 
-        String imfUrlPrefix = "https://imf.wd5.myworkdayjobs.com/en-US/IMF";
 
-        String imfApiEndpointPrefix = "https://imf.wd5.myworkdayjobs.com/wday/cxs/imf/IMF";
+        String imfUrlPrefix = "https://ge.wd5.myworkdayjobs.com/en-US/GE_ExternalSite";
+
+        String imfApiEndpointPrefix = "https://ge.wd5.myworkdayjobs.com/wday/cxs/ge/GE_ExternalSite";
 
 //        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -72,10 +74,11 @@ public class JsoupIMFService {
             JSONArray bulletedFields = jsonArray.getJSONObject(i).getJSONArray("bulletFields");
 
 
+            System.out.println(bulletedFields.toString());
 
-             String    jobId = ApplicationConstants.IMF+"-"+bulletedFields.get(0).toString();
-           String deadLine = bulletedFields.get(1).toString().replace("The last day to apply to this job is :","")
-                   .replace("- Closing based on :","");
+            String    jobId = ApplicationConstants.GE+"-"+bulletedFields.get(0).toString();
+           String deadLine = bulletedFields.length()>1? bulletedFields.get(1).toString().replace("The last day to apply to this job is :","")
+                   .replace("- Closing based on :","") : "";
 
 
 
@@ -111,7 +114,7 @@ public class JsoupIMFService {
                         .dutyStation(dutyStation)
                         .postingDescrRaw(jobPostingDescr)
                         .addedDate(new Date())
-                        .unEntity(ApplicationConstants.IMF)
+                        .unEntity("GE")
                         .jobpostingStatus(JobpostingStatus.ACTIVE)
 
                         .build();
@@ -141,7 +144,7 @@ public class JsoupIMFService {
                             .dutyStation(dutyStation)
                             .postingDescrRaw(jobPostingDescr)
                             .addedDate(new Date())
-                            .unEntity(ApplicationConstants.IMF)
+                            .unEntity(ApplicationConstants.GE)
                             .jobpostingStatus(JobpostingStatus.ACTIVE)
 
                             .build();
